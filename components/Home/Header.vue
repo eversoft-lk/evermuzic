@@ -10,6 +10,7 @@
         placeholder="Type here to search"
         color="gray"
         size="lg"
+        icon="material-symbols:search"
         class="w-full"
       />
     </div>
