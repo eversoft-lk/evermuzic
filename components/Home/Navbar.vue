@@ -44,7 +44,7 @@ const options = [
 </script>
 
 <template>
-  <div class="w-[300px] flex flex-col bg-[#18181a]">
+  <div class="w-[300px] flex flex-col bg-[#05060e] overflow-hidden">
     <div class="flex items-center p-5 gap-3">
       <img src="/img/logo.png" alt="Evermuzic Logo" class="w-9 h-9" />
       <span class="font-bold text-xl">Evermuzic</span>

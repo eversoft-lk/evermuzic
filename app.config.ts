@@ -5,5 +5,8 @@ export default defineAppConfig({
     icons: {
       dynamic: true,
     },
+    button: {
+      font: "font-bold",
+    }
   },
 });

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full grid grid-cols-3">
+  <div class="w-full grid grid-cols-3 p-5">
     <div class="flex items-center gap-3">
       <NuxtLink to="/songs" class="font-bold">Music</NuxtLink>
       <NuxtLink to="/karaoke" class="font-bold">Karaoke</NuxtLink>
