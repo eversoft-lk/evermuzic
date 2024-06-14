@@ -3,7 +3,7 @@
     <div class="flex items-center gap-3">
       <NuxtLink to="/songs" class="font-bold">Music</NuxtLink>
       <NuxtLink to="/karaoke" class="font-bold">Karaoke</NuxtLink>
-      <NuxtLink to="/random" class="font-bold">Random</NuxtLink>
+      <NuxtLink to="/random" class="font-bold">Feedback</NuxtLink>
     </div>
     <div class="flex justify-center px-5">
       <UInput
