@@ -206,7 +206,7 @@
                 <div class="my-8 border-b text-center">
                     <div
                         class="leading-none px-2 inline-block text-sm text-white tracking-wide font-medium bg-gray-800 transform translate-y-1/2">
-                        Or sign in with e-mail
+                        Or sign up with fill the form
                     </div>
                 </div>
                 <div class="space-y-4">
