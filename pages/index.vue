@@ -40,11 +40,9 @@ useHead({
             <div class="flex justify-between">
               <h2 class="font-bold uppercase">Recently Played</h2>
               <NuxtLink
-                text="View All"
                 to="/recently-played"
-                icon="material-symbols:arrow-right"
                 class="text-blue-600 hover:text-blue-500"
-              />
+              >View All</NuxtLink>
             </div>
             <div class="my-8">
               <Timeline>
@@ -82,15 +80,42 @@ useHead({
               class="relative w-full h-[300px] bg-slate-900 shadow-lg shadow-slate-950 rounded-l-lg"
             >
               <div
-                class="absolute w-4/5 h-[80px] px-5 flex items-center bg-slate-800 shadow-lg shadow-slate-950 rounded-lg -top-10 -left-10"
+                class="absolute w-4/5 h-[80px] px-5 flex items-center bg-slate-800 shadow-lg shadow-slate-950 rounded-lg -top-10 -left-16"
               >
                 <div class="flex gap-5">
-                  <div class="w-16 h-16 rounded-full bg-[url(/img/cloud-night.jpg)] bg-center bg-cover"></div>
+                  <div
+                    class="w-16 h-16 rounded-full bg-[url(/img/cloud-night.jpg)] bg-center bg-cover"
+                  ></div>
                   <div class="flex flex-col justify-center gap-1">
                     <p class="text-sm italic">Now Playing</p>
                     <h3 class="font-bold">Never Let Go</h3>
                   </div>
                 </div>
+              </div>
+              <div class="absolute flex gap-5 w-full bottom-10 -left-5">
+                <HomeSimillarSongCard
+                  :options="{
+                    id: '1',
+                    title: 'Never Let Go',
+                    artist: 'Jung Kook',
+                  }"
+                />
+
+                <HomeSimillarSongCard
+                  :options="{
+                    id: '2',
+                    title: 'Techno',
+                    artist: 'Jon Moyer',
+                  }"
+                />
+
+                <HomeSimillarSongCard
+                  :options="{
+                    id: '3',
+                    title: 'Tech House',
+                    artist: 'Julian Guzz',
+                  }"
+                />
               </div>
             </div>
           </div>
