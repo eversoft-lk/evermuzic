@@ -6,21 +6,12 @@
       <NuxtLink to="/random" class="font-bold">Feedback</NuxtLink>
     </div>
     <div class="flex justify-center px-5">
-      <UInput
-        placeholder="Type here to search"
-        color="gray"
-        size="lg"
-        icon="material-symbols:search"
-        class="w-full"
-      />
+      <UInput placeholder="Type here to search" color="gray" size="lg" icon="material-symbols:search" class="w-full" />
     </div>
     <div class="flex items-center justify-end gap-4">
       <Icon name="material-symbols:notifications" class="cursor-pointer" />
-      <Icon
-        name="material-symbols:settings-suggest-rounded"
-        class="cursor-pointer"
-      />
-      <UButton label="Get Started" color="black" size="lg" />
+      <Icon name="material-symbols:settings-suggest-rounded" class="cursor-pointer" />
+      <UButton to="/auth/sign-in" label="Get Started" color="black" size="lg" />
     </div>
   </div>
 </template>
