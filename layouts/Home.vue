@@ -6,9 +6,13 @@
     <div
       class="flex-1 h-screen bg-cover bg-top bg-[url(/img/home-background.png)] overflow-hidden relative"
     >
-      <div class="w-full h-full flex flex-col overflow-y-scroll">
-        <HomeHeader />
-        <slot />
+      <div
+        class="w-full h-full flex flex-col justify-between overflow-y-scroll"
+      >
+        <div>
+          <HomeHeader />
+          <slot />
+        </div>
 
         <HomeFooter />
       </div>

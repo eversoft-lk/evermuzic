@@ -40,7 +40,6 @@
             <div class="mx-auto max-w-xs flex flex-col gap-3">
               <UFormGroup label="Email Or Username">
                 <UInput
-                  size="lg"
                   placeholder="Enter Your Email Or Username"
                 />
               </UFormGroup>
@@ -48,7 +47,6 @@
               <UFormGroup label="Password">
                 <UInput
                   type="password"
-                  size="lg"
                   placeholder="Enter Your Password"
                 />
               </UFormGroup>
