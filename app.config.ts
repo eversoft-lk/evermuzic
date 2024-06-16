@@ -6,7 +6,15 @@ export default defineAppConfig({
       dynamic: true,
     },
     button: {
+      default: {
+        size: "lg",
+      },
       font: "font-bold",
-    }
+    },
+    input: {
+      default: {
+        size: "lg",
+      },
+    },
   },
 });

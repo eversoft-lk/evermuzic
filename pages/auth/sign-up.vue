@@ -49,24 +49,20 @@
             <div class="mx-auto flex flex-col gap-3">
               <div class="grid grid-cols-2 gap-2">
                 <UFormGroup label="Name">
-                  <UInput size="lg" placeholder="Enter Your Name" />
+                  <UInput placeholder="Enter Your Name" />
                 </UFormGroup>
 
                 <UFormGroup label="Username">
-                  <UInput size="lg" placeholder="Enter Your Username" />
+                  <UInput placeholder="Enter Your Username" />
                 </UFormGroup>
               </div>
 
               <UFormGroup label="Email Address">
-                <UInput type="email" size="lg" placeholder="Enter Your Email" />
+                <UInput type="email" placeholder="Enter Your Email" />
               </UFormGroup>
 
               <UFormGroup label="Password">
-                <UInput
-                  type="password"
-                  size="lg"
-                  placeholder="Enter Your Password"
-                />
+                <UInput type="password" placeholder="Enter Your Password" />
               </UFormGroup>
 
               <UButton
