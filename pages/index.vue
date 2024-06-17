@@ -27,7 +27,7 @@ useHead({
               uninterrupted music experience.
             </p>
             <div class="mt-5">
-              <UButton label="Join EverMuzic" to="/register" size="lg" />
+              <UButton label="Join EverMuzic" to="/auth/sign-up" size="lg" />
             </div>
           </div>
           <div class="hidden md:flex justify-center items-center">
@@ -36,13 +36,16 @@ useHead({
         </div>
 
         <div class="grid grid-cols-2">
-          <div class="flex flex-col px-10">
+          <div
+            class="col-span-full lg:col-span-1 flex flex-col px-10 order-2 lg:order-1"
+          >
             <div class="flex justify-between">
               <h2 class="font-bold uppercase">Recently Played</h2>
               <NuxtLink
                 to="/recently-played"
                 class="text-blue-600 hover:text-blue-500"
-              >View All</NuxtLink>
+                >View All</NuxtLink
+              >
             </div>
             <div class="my-8">
               <Timeline>
@@ -75,9 +78,11 @@ useHead({
             </div>
           </div>
 
-          <div class="flex justify-end items-center">
+          <div
+            class="col-span-full lg:col-span-1 flex justify-end items-center order-1 lg:order-2"
+          >
             <div
-              class="relative w-full h-[300px] bg-slate-900 shadow-lg shadow-slate-950 rounded-l-lg"
+              class="relative w-[70%] lg:w-full h-[300px] bg-slate-900 shadow-lg shadow-slate-950 rounded-l-lg"
             >
               <div
                 class="absolute w-4/5 h-[80px] px-5 flex items-center bg-slate-800 shadow-lg shadow-slate-950 rounded-lg -top-10 -left-16"
