@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import type { PropType } from "vue";
 
+defineProps({
+  options: {
+    type: Object as PropType<Options>,
+    required: true,
+  },
+});
+
 const navbar = useNavbarStore();
+const isLarge = inject("isLarge") as Ref<boolean>;
+
 type Options = {
   name: string;
   options: {
@@ -10,21 +19,16 @@ type Options = {
     to: string;
   }[];
 };
-
-defineProps({
-  options: {
-    type: Object as PropType<Options>,
-    required: true,
-  },
-});
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
     <div class="w-full border-t border-slate-800"></div>
     <h4
-      v-show="navbar.isOpen === true"
       class="text-sm font-bold uppercase text-gray-400"
+      :class="{
+        'lg:hidden': !navbar.isOpen,
+      }"
     >
       {{ options.name }}
     </h4>
@@ -40,7 +44,7 @@ defineProps({
         class="flex gap-3 items-center font-semibold"
         :to="option.to"
       >
-        <template v-if="navbar.isOpen">
+        <template v-if="navbar.isOpen || !isLarge">
           <Icon :name="option.icon" />
           <span class="text-sm">
             {{ option.name }}

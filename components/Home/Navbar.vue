@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const navbar = useNavbarStore();
+const isLarge = inject("isLarge") as Ref<boolean>;
 
 const options = [
   {
@@ -47,19 +48,25 @@ const options = [
 
 <template>
   <div
-    class="hidden lg:flex h-screen flex-col bg-[#05060e] transform-[width] duration-300 z-40"
+    class="w-[250px] flex h-screen flex-col bg-[#05060e] transform-[width] duration-300 z-40"
     :class="{
-      'lg:w-[250px]': navbar.isOpen,
-      'lg:w-[80px]': !navbar.isOpen,
+      'w-[80px]': !navbar.isOpen,
+      hidden: !navbar.isOpen && !isLarge,
+      'fixed': !isLarge,
     }"
   >
     <div class="relative flex items-center p-5 gap-3">
       <img src="/img/logo.png" alt="Evermuzic Logo" class="max-w-9" />
-      <span class="font-bold text-xl" v-show="navbar.isOpen === true">
+      <span
+        class="font-bold text-xl"
+        :class="{
+          'lg:hidden': !navbar.isOpen,
+        }"
+      >
         Evermuzic
       </span>
       <div
-        class="absolute w-5 h-5 flex justify-center items-center rounded-full bg-slate-900 -right-2 cursor-pointer transition-transform duration-300"
+        class="hidden lg:flex absolute w-5 h-5 justify-center items-center rounded-full bg-slate-900 -right-2 cursor-pointer transition-transform duration-300"
         :class="{
           'rotate-0': navbar.isOpen,
           'rotate-180': !navbar.isOpen,
