@@ -1,3 +1,7 @@
+<script setup>
+const navbar = useNavbarStore();
+</script>
+
 <template>
   <div class="w-full grid grid-cols-2 md:grid-cols-3 p-5">
     <div class="flex items-center gap-3">
@@ -21,8 +25,19 @@
           name="material-symbols:settings-suggest-rounded"
           class="cursor-pointer"
         />
+        <UButton
+          to="/auth/sign-in"
+          label="Get Started"
+          color="black"
+          size="lg"
+        />
       </div>
-      <UButton to="/auth/sign-in" label="Get Started" color="black" size="lg" />
+      <UButton
+        icon="material-symbols:menu"
+        color="black"
+        @click="navbar.toggleNavbar()"
+        class="rounded-full lg:hidden"
+      />
     </div>
   </div>
 </template>
