@@ -52,7 +52,7 @@ const options = [
     :class="{
       'w-[80px]': !navbar.isOpen,
       hidden: !navbar.isOpen && !isLarge,
-      'fixed': !isLarge,
+      'fixed lg:static': !isLarge,
     }"
   >
     <div class="relative flex items-center p-5 gap-3">
