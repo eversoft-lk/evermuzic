@@ -1,5 +1,5 @@
 <template>
-  <footer class="lg:p-5">
+  <footer class="lg:p-5 lg:pb-20">
     <div
       class="rounded-t-lg lg:rounded-lg bg-[#05060e] border border-slate-900 w-full flex flex-col bg-[url(/img/footer-img.png)] bg-no-repeat bg-contain bg-right-top px-5"
     >
@@ -43,12 +43,15 @@
       >
         <p>
           Design And Developed By
-          <span class="font-bold">Eversoft IT Solutions</span>.
+          <a class="font-bold" href="https://www.eversoft.lk"
+            >Eversoft IT Solutions</a
+          >.
         </p>
         <p>
           &copy; Copyright 2024
-          <span class="font-bold">Eversoft IT Solutions</span>. Alright
-          Reserved.
+          <a class="font-bold" href="https://www.eversoft.lk"
+            >Eversoft IT Solutions</a
+          >. Alright Reserved.
         </p>
       </div>
     </div>
