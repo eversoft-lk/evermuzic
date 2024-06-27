@@ -2,10 +2,10 @@ import { defineStore } from "pinia";
 
 export const useNavbarStore = defineStore("navbar", {
   state: () => ({
-    isOpen: true,
+    isOpen: false,
   }),
   getters: {
-    isNavbarOpen() {
+    isNavbarOpen(): boolean {
       return this.isOpen;
     },
   },
