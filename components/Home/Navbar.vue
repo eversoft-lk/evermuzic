@@ -17,11 +17,6 @@ const options = [
         to: "/songs",
       },
       {
-        name: "Top Chart",
-        icon: "material-symbols:stacked-bar-chart",
-        to: "/top-chart",
-      },
-      {
         name: "Artists",
         icon: "material-symbols:artist",
         to: "/artists",
