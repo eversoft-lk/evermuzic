@@ -1,3 +1,16 @@
+<script setup>
+useHead({
+  title: "EverMuzic | Give Us Your Feedback",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Your experience with EverMuzic matters to us! Let us know what you think about our ad-free music streaming platform. Share your thoughts, suggestions, and any issues you've encountered. Your feedback helps us create the best music experience for you.",
+    },
+  ],
+});
+</script>
+
 <template>
   <div>
     <NuxtLayout name="home">
@@ -23,7 +36,9 @@
               </p>
             </div>
           </div>
-          <div class="col-span-full lg:col-span-1 flex flex-col border-t lg:border-t-0 lg:border-l border-slate-900">
+          <div
+            class="col-span-full lg:col-span-1 flex flex-col border-t lg:border-t-0 lg:border-l border-slate-900"
+          >
             <div class="p-10">
               <div class="flex justify-center">
                 <span

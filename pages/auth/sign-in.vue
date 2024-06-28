@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-[#0e1222]"
+    class="min-h-screen py-5 flex items-center justify-center bg-gradient-to-br from-black to-[#0e1222]"
   >
     <div
       class="w-full lg:max-w-[70%] bg-slate-950/30 backdrop-blur-lg border border-slate-900 shadow sm:rounded-lg grid grid-cols-2"

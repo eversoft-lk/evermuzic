@@ -17,5 +17,7 @@
         <HomeFooter />
       </div>
     </div>
+
+    <Player />
   </div>
 </template>
