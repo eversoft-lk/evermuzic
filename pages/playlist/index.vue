@@ -4,9 +4,7 @@
             <div class="p-5">
                 <div class="col-span-2 lg:col-span-2">
                     <div class="flex justify-between">
-                        <p class="text-white text-xl font-bold mb-4">Now Playing</p>
-                        <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
-                        </NuxtLink>
+                        <p class="text-white text-xl font-bold mb-4">My Playlist</p>
                     </div>
 
                     <div
@@ -17,13 +15,10 @@
                             </div>
                             <div class="ml-2">
                                 <p class="mb-1 text-lg text-white">Create a new Playlist</p>
-                                <p class="text-gray-300">song</p>
                             </div>
                         </div>
                     </div>
-                    <div class="flex">
-                        <p class="text-gray-300 mr-2">songs</p>
-                    </div>
+                    <hr class="h-px my-8 bg-slate-800 border-0">
                 </div>
                 <div v-for="item in items" :key="item.title"
                     class="flex justify-between p-1 hover:bg-slate-800 rounded-lg bg-[#05060e88] backdrop-blur-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row">

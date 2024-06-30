@@ -9,9 +9,9 @@
                 </div>
                 <div
                     class="w-full p-1 bg-slate-950/50 backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div v-for="item in artist" :key="item.title"
-                            class="h-64 w-full rounded-lg p-2 bg-cover bg-center"
+                            class="h-48 md:h-64 lg:h-64 w-full rounded-lg p-2 bg-cover bg-center"
                             :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }">
                             <div class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg">
                                 <p class="text-base text-white">{{ item.title }}</p>
@@ -38,9 +38,9 @@
                     <div class="col-span-1 sm:col-span-2 lg:col-span-4">
                         <div
                             class="w-full p-1 bg-slate-950/50 backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950">
-                            <div class="grid grid-cols-3 gap-4">
+                            <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div v-for="item in popularartist" :key="item.title"
-                                    class="h-64 w-full rounded-lg p-2 bg-cover bg-center"
+                                    class="h-48 md:h-64 lg:h-64 w-full rounded-lg p-2 bg-cover bg-center"
                                     :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }">
                                     <div
                                         class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg">
