@@ -5,5 +5,10 @@ export default defineNuxtConfig({
   tailwindcss: {
     configPath: "~/tailwind.config.ts",
     cssPath: "~/assets/css/style.css",
-  }
-})
+  },
+  runtimeConfig: {
+    public: {
+      evermuzicApi: process.env.EVERMUZIC_API || "http://localhost:8787/api/v1",
+    },
+  },
+});
