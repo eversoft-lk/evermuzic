@@ -9,6 +9,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       evermuzicApi: process.env.EVERMUZIC_API || "http://localhost:8787/api/v1",
+      spotifyApi: process.env.SPOTIFY_API || "https://api.spotify.com/v1",
     },
   },
 });
