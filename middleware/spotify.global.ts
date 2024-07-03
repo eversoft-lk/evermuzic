@@ -6,7 +6,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const spotify = useSpotify();
 
   if (spotify.check()) {
-    return;
+    if (!spotify.isExpiresSoon) {
+      return;
+    }
   }
 
   await spotify.getAnAccessToken();

@@ -116,8 +116,16 @@ async function getArtists() {
         <div class="w-full">
           <div
             class="flex justify-center flex-wrap gap-4"
-            v-if="geoArtists.length >= 8"
+            v-if="geoArtists.length < 8"
           >
+            <div v-for="index in 8" :key="index" class="flex flex-col gap-3">
+              <USkeleton class="h-48 md:h-64 w-48 md:w-64" />
+              <USkeleton class="w-full h-2" />
+              <USkeleton class="w-2/3 h-2" />
+            </div>
+          </div>
+
+          <div class="flex justify-center flex-wrap gap-4" v-else>
             <div
               v-for="index in 8"
               :key="geoArtists[index - 1]?.name"
@@ -145,9 +153,30 @@ async function getArtists() {
             >View All
           </NuxtLink>
         </div>
+
+        <div
+          v-if="popularArtists.length < 7"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4"
+        >
+          <USkeleton
+            class="h-72 md:h-full col-span-1 sm:col-span-2 lg:col-span-2 p-1 shadow-lg shadow-slate-950 sm:p-5"
+          />
+
+          <div class="col-span-1 sm:col-span-2 lg:col-span-4">
+            <div class="w-full p-1">
+              <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                <USkeleton
+                  v-for="index in 6"
+                  class="h-48 md:h-64 lg:h-64 w-full"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4"
-          v-if="popularArtists.length >= 7"
+          v-else
         >
           <div
             class="col-span-1 sm:col-span-2 lg:col-span-2 p-1 bg-slate-950/50 rounded-lg shadow-lg shadow-slate-950 sm:p-5 bg-cover bg-center"
