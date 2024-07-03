@@ -12,6 +12,18 @@ export const useSpotify = defineStore("spotify", {
     accessToken: null as accessToken,
     expiresIn: null as Date | null,
   }),
+  getters: {
+    isExpiresSoon(): boolean {
+      if (!this.expiresIn) {
+        return false;
+      }
+
+      const now = new Date();
+      const expirationTime = new Date(this.expiresIn);
+      expirationTime.setMinutes(expirationTime.getMinutes() - 5);
+      return now > expirationTime;
+    },
+  },
   actions: {
     check(): boolean {
       if (!this.accessToken) {
