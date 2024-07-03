@@ -1,21 +1,103 @@
 <script setup lang="ts">
 const app = useRuntimeConfig();
-const geoArtists = ref([]);
-const popularArtists = ref([]);
+const geoArtists = ref<Artist[]>([]);
+const popularArtists = ref<Artist[]>([]);
+const spotify = useSpotify();
+
+type Artist = {
+  name: string;
+  image?: string;
+};
+
+type getArtistsResponse = {
+  geo: Artist[];
+  popular: Artist[];
+};
+
+type ArtistFromSpotifyResponse = {
+  artists: {
+    items: spotifyArtists[];
+  };
+};
+
+type spotifyArtists = {
+  name: string;
+  images: {
+    url: string;
+  }[];
+};
 
 onMounted(async () => {
   await getArtists();
 });
 
 async function getArtists() {
-  const { data } = await useFetch(app.public.evermuzicApi + "/artists");
-  if (data.value) {
-    geoArtists.value = data.value.geo;
-    popularArtists.value = data.value.popular;
+  const { data: artists } = await useFetch<getArtistsResponse>(
+    app.public.evermuzicApi + "/artists"
+  );
+  if (!artists.value) {
+    return;
   }
 
-  console.log(toRaw(geoArtists.value));
-  console.log(toRaw(popularArtists.value));
+  let geoCounter = 0;
+  artists.value.geo.forEach((artist) => {
+    if (geoCounter > 8) {
+      return;
+    }
+
+    geoCounter++;
+    useFetch<ArtistFromSpotifyResponse>(
+      app.public.spotifyApi +
+        `/search?q=${artist.name.toLowerCase()}&type=artist&limit=8&offset=0`,
+      {
+        headers: {
+          Authorization: `Bearer ${spotify.accessToken}`,
+        },
+      }
+    ).then((res) => {
+      if (!res.data?.value) {
+        return;
+      }
+
+      const data = res.data.value;
+      const item: Artist = {
+        name: data.artists.items[0].name,
+        image: data.artists.items[0].images[1]?.url,
+      };
+
+      geoArtists.value.push(item);
+    });
+  });
+
+  let popularCounter = 0;
+  artists.value.popular.forEach((artist) => {
+    if (popularCounter > 8) {
+      return;
+    }
+
+    popularCounter++;
+    useFetch<ArtistFromSpotifyResponse>(
+      app.public.spotifyApi +
+        `/search?q=${artist.name.toLowerCase()}&type=artist&limit=8&offset=0`,
+      {
+        headers: {
+          Authorization: `Bearer ${spotify.accessToken}`,
+        },
+      }
+    ).then((res) => {
+      if (!res.data?.value) {
+        return;
+      }
+
+      const data = res.data.value;
+      const item: Artist = {
+        name: data.artists.items[0].name,
+        image: data.artists.items[0].images[1]?.url,
+      };
+
+      popularArtists.value.push(item);
+    });
+  });
 }
 </script>
 
@@ -34,21 +116,21 @@ async function getArtists() {
         <div class="w-full">
           <div
             class="flex justify-center flex-wrap gap-4"
-            v-if="geoArtists.length > 0"
+            v-if="geoArtists.length >= 8"
           >
             <div
               v-for="index in 8"
-              :key="geoArtists[index - 1].name"
+              :key="geoArtists[index - 1]?.name"
               class="h-48 md:h-64 w-48 md:w-64 rounded-lg p-2 bg-cover bg-center"
-              style="
-                background-image: url('https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg');
-              "
+              :style="{
+                backgroundImage: `url(${geoArtists[index - 1]?.image})`,
+              }"
             >
               <div
                 class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
               >
                 <p class="text-base text-white">
-                  {{ geoArtists[index - 1].name }}
+                  {{ geoArtists[index - 1]?.name }}
                 </p>
                 <p class="text-sm text-gray-300 text-right">Artist</p>
               </div>
@@ -65,13 +147,13 @@ async function getArtists() {
         </div>
         <div
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4"
-          v-if="popularArtists.length > 0"
+          v-if="popularArtists.length >= 7"
         >
           <div
             class="col-span-1 sm:col-span-2 lg:col-span-2 p-1 bg-slate-950/50 rounded-lg shadow-lg shadow-slate-950 sm:p-5 bg-cover bg-center"
-            style="
-              background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/71/Taylor_Swift_The_Eras_Tour_1989_Era_Set_%2853109542801%29_%28cropped%29.jpg');
-            "
+            :style="{
+              backgroundImage: `url(${popularArtists[0].image})`,
+            }"
           >
             <div
               class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
@@ -92,9 +174,9 @@ async function getArtists() {
                   v-for="index in 6"
                   :key="popularArtists[index].name"
                   class="h-48 md:h-64 lg:h-64 w-full rounded-lg p-2 bg-cover bg-center"
-                  style="
-                    background-image: url('https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg');
-                  "
+                  :style="{
+                    backgroundImage: `url(${popularArtists[index].image})`,
+                  }"
                 >
                   <div
                     class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
@@ -113,108 +195,3 @@ async function getArtists() {
     </NuxtLayout>
   </div>
 </template>
-<!-- 
-<script>
-export default {
-  data() {
-    return {
-      artist: [
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Dejavu",
-          tracks: 30,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-      ],
-      popularartist: [
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-      ],
-      big: [
-        {
-          imageUrl:
-            "https://upload.wikimedia.org/wikipedia/commons/7/71/Taylor_Swift_The_Eras_Tour_1989_Era_Set_%2853109542801%29_%28cropped%29.jpg",
-          title: "taylor swift",
-          tracks: 35,
-        },
-      ],
-    };
-  },
-};
-</script> -->
