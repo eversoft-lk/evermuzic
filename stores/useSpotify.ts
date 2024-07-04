@@ -21,6 +21,7 @@ export const useSpotify = defineStore("spotify", {
       const now = new Date();
       const expirationTime = new Date(this.expiresIn);
       expirationTime.setMinutes(expirationTime.getMinutes() - 5);
+      console.log(now, expirationTime);
       return now > expirationTime;
     },
   },
@@ -32,6 +33,11 @@ export const useSpotify = defineStore("spotify", {
 
       const token = localStorage.getItem("spotify-access-token");
       if (!token) {
+        return false;
+      }
+
+      // if token expired, return false
+      if (this.isExpiresSoon) {
         return false;
       }
 

@@ -2,7 +2,9 @@
 const app = useRuntimeConfig();
 const spotify = useSpotify();
 
+const featuredPlaylists = ref([]);
 const trendingNow = ref([]);
+const recommendedSongs = ref([]);
 const topSong = ref({
   name: null,
   artist: null,
@@ -10,7 +12,13 @@ const topSong = ref({
 });
 
 onMounted(async () => {
-  await getTrendingSongs();
+  Promise.all([getTrendingSongs(), getFeaturedPlaylist()]);
+});
+watch(featuredPlaylists, () => {
+  recommendedSongs.value = [];
+  for (let i = 0; i < 6; i++) {
+    getRecommenedSongs();
+  }
 });
 
 async function getTrendingSongs() {
@@ -66,6 +74,65 @@ async function getTopSong(name) {
   topSong.value.artist = data.value.artists.items[0].name;
   topSong.value.imageUrl = data.value.artists.items[0].images[0].url;
 }
+
+async function getFeaturedPlaylist() {
+  const { data } = await useFetch(
+    app.public.spotifyApi + "/browse/featured-playlists",
+    {
+      headers: {
+        Authorization: `Bearer ${spotify.accessToken}`,
+      },
+    }
+  );
+
+  if (!data.value) {
+    return;
+  }
+
+  if (data.value.playlists.items.length > 10) {
+    featuredPlaylists.value = data.value.playlists.items.slice(0, 10);
+  } else {
+    featuredPlaylists.value = data.value.playlists.items;
+  }
+}
+
+async function getRecommenedSongs() {
+  if (!featuredPlaylists.value.length) {
+    return;
+  }
+
+  const randomIndex = Math.floor(
+    Math.random() * featuredPlaylists.value.length
+  );
+  const randomPlaylist = featuredPlaylists.value[randomIndex];
+
+  const playlistId = randomPlaylist.id;
+
+  const totalTracks = randomPlaylist.tracks.total;
+  const randomTrackIndex = Math.floor(Math.random() * totalTracks);
+
+  const { data } = await useFetch(
+    app.public.spotifyApi +
+      `/playlists/${playlistId}/tracks?offset=${randomTrackIndex}&limit=1`,
+    {
+      headers: {
+        Authorization: `Bearer ${spotify.accessToken}`,
+      },
+    }
+  );
+
+  if (!data.value) {
+    return;
+  }
+
+  const track = data.value.items[0].track;
+  recommendedSongs.value.push({
+    name: track.name,
+    artist: track.artists[0].name,
+    duration: track.duration_ms,
+    imageUrl: track.album.images[0].url,
+  });
+}
 </script>
 
 <template>
@@ -116,26 +183,46 @@ async function getTopSong(name) {
                 >View All
               </NuxtLink>
             </div>
+
             <div
-              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
+              class="w-full shadow-lg shadow-slate-950"
+              v-if="!featuredPlaylists.length"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <div
-                    v-for="item in playlist"
-                    :key="item.title"
+                  <USkeleton
+                    v-for="index in 8"
+                    :key="index"
+                    class="flex-none h-52 w-52 rounded-lg"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="w-full shadow-lg shadow-slate-950"
+              v-else
+            >
+              <div class="scroll-container overflow-x-auto py-1 px-1">
+                <div class="flex space-x-2">
+                  <NuxtLink
+                    v-for="playlist in featuredPlaylists"
+                    :key="playlist.name"
                     class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }"
+                    :style="{
+                      backgroundImage: `url(${playlist.images[0].url})`,
+                    }"
+                    :to="`/playlist/1/${playlist.id}`"
                   >
                     <div
                       class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
                     >
-                      <p class="text-base text-white">{{ item.title }}</p>
+                      <p class="text-base text-white">{{ playlist.name }}</p>
                       <p class="text-sm text-gray-300 text-right">
-                        {{ item.tracks }} tracks
+                        {{ playlist.tracks.total }} tracks
                       </p>
                     </div>
-                  </div>
+                  </NuxtLink>
                 </div>
               </div>
             </div>
@@ -147,32 +234,52 @@ async function getTopSong(name) {
                 >View All
               </NuxtLink>
             </div>
-            <div
-              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
-            >
+            <div class="w-full bg-[#05060e88] backdrop-blur-lg shadow-lg shadow-slate-950">
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
               >
-                <div
-                  v-for="item in alsolike"
-                  :key="item.title"
-                  class="flex justify-between p-1 hover:bg-slate-800 rounded-lg"
-                >
-                  <div class="flex">
-                    <img
-                      :src="item.imageUrl"
-                      alt="icon"
-                      class="h-20 w-20 rounded-lg"
-                    />
-                    <div class="ml-2">
-                      <p class="mb-1 text-lg text-white">{{ item.title }}</p>
-                      <p class="text-gray-300">{{ item.artist }}</p>
+                <template v-if="!recommendedSongs.length">
+                  <div
+                    v-for="index in 6"
+                    :key="index"
+                    class="flex gap-3 mb-1 p-2"
+                  >
+                    <USkeleton class="w-20 h-20 rounded-lg" />
+                    <div class="flex-1 flex flex-col gap-3 mt-2">
+                      <USkeleton class="w-full h-2 rounded-lg" />
+                      <USkeleton class="w-2/3 h-2 rounded-lg" />
+                      <USkeleton class="w-1/2 h-2 rounded-lg" />
                     </div>
                   </div>
-                  <div class="flex">
-                    <p class="text-gray-300 mr-2">{{ item.duration }}</p>
+                </template>
+
+                <template v-else>
+                  <div
+                    v-for="song in recommendedSongs"
+                    :key="song.name"
+                    class="flex justify-between p-2 hover:bg-black/30 rounded-lg"
+                  >
+                    <div class="flex">
+                      <img
+                        :src="song.imageUrl"
+                        alt="icon"
+                        class="h-20 w-20 rounded-lg"
+                      />
+                      <div class="ml-2">
+                        <p class="text-white">{{ song.name }}</p>
+                        <p class="text-sm text-gray-400">{{ song.artist }}</p>
+                      </div>
+                    </div>
+                    <div class="flex flex-col justify-between items-center">
+                      <p class="text-gray-300 text-sm mr-2">
+                        {{ msToMin(song.duration) }}
+                      </p>
+                      <div class="pb-3">
+                        <Icon name="solar:play-bold-duotone" class="text-xl" />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </template>
               </div>
             </div>
           </div>
@@ -238,173 +345,24 @@ async function getTopSong(name) {
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      items: [
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Cruel",
-          artist: "Jackson Wang",
-          duration: "03:29",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Blinding Lights",
-          artist: "The Weeknd",
-          duration: "03:20",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Levitating",
-          artist: "Dua Lipa",
-          duration: "03:23",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          duration: "03:35",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Levitating",
-          artist: "Dua Lipa",
-          duration: "03:23",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Levitating",
-          artist: "Dua Lipa",
-          duration: "03:23",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Levitating",
-          artist: "Dua Lipa",
-          duration: "03:23",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Levitating",
-          artist: "Dua Lipa",
-          duration: "03:23",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Levitating",
-          artist: "Dua Lipa",
-          duration: "03:23",
-        },
-      ],
-      playlist: [
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Dejavu",
-          tracks: 30,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Summer Hits",
-          tracks: 25,
-        },
-      ],
-      alsolike: [
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          duration: "03:35",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          duration: "03:35",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          duration: "03:35",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          duration: "03:35",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          duration: "03:35",
-        },
-        {
-          imageUrl:
-            "https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg",
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          duration: "03:35",
-        },
-      ],
-    };
-  },
-};
-</script>
-
 <style scoped>
-.scroll-container {
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  /* Internet Explorer 10+ */
-  scrollbar-width: none;
-  /* Firefox */
+.scroll-container::-webkit-scrollbar-track {
+  background: #0a0e18; /* Color of the scrollbar track */
 }
 
-.scroll-container::-webkit-scrollbar {
-  display: none;
-  /* Safari and Chrome */
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners of the scrollbar thumb */
+  border: 3px solid #0a0e18; /* Padding around the thumb */
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color when hovering over the scrollbar thumb */
+}
+
+.scroll-container {
+  scrollbar-width: thin; /* Thin scrollbar */
+  scrollbar-color: #888 #0a0e18; /* Scrollbar thumb and track colors */
+  scrollbar-gutter: stable;
 }
 </style>
