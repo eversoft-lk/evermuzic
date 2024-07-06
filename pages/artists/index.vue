@@ -5,6 +5,7 @@ const popularArtists = ref<Artist[]>([]);
 const spotify = useSpotify();
 
 type Artist = {
+  id: string;
   name: string;
   image?: string;
 };
@@ -21,6 +22,7 @@ type ArtistFromSpotifyResponse = {
 };
 
 type spotifyArtists = {
+  id: string;
   name: string;
   images: {
     url: string;
@@ -61,6 +63,7 @@ async function getArtists() {
 
       const data = res.data.value;
       const item: Artist = {
+        id: data.artists.items[0].id,
         name: data.artists.items[0].name,
         image: data.artists.items[0].images[1]?.url,
       };
@@ -91,6 +94,7 @@ async function getArtists() {
 
       const data = res.data.value;
       const item: Artist = {
+        id: data.artists.items[0].id,
         name: data.artists.items[0].name,
         image: data.artists.items[0].images[1]?.url,
       };
@@ -126,10 +130,11 @@ async function getArtists() {
           </div>
 
           <div class="flex justify-center flex-wrap gap-4" v-else>
-            <div
+            <NuxtLink
               v-for="index in 8"
               :key="geoArtists[index - 1]?.name"
               class="h-48 md:h-64 w-48 md:w-64 rounded-lg p-2 bg-cover bg-center"
+              :to="`/artists/${geoArtists[index - 1]?.id}`"
               :style="{
                 backgroundImage: `url(${geoArtists[index - 1]?.image})`,
               }"
@@ -142,7 +147,7 @@ async function getArtists() {
                 </p>
                 <p class="text-sm text-gray-300 text-right">Artist</p>
               </div>
-            </div>
+            </NuxtLink>
           </div>
         </div>
         <div class="flex justify-between pb-5 pt-5">
@@ -178,11 +183,12 @@ async function getArtists() {
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4"
           v-else
         >
-          <div
+          <NuxtLink
             class="col-span-1 sm:col-span-2 lg:col-span-2 p-1 bg-slate-950/50 rounded-lg shadow-lg shadow-slate-950 sm:p-5 bg-cover bg-center"
             :style="{
               backgroundImage: `url(${popularArtists[0].image})`,
             }"
+            :to="`/artists/${popularArtists[0].id}`"
           >
             <div
               class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
@@ -192,20 +198,21 @@ async function getArtists() {
                 Most Popular Artist Worldwide
               </p>
             </div>
-          </div>
+          </NuxtLink>
 
           <div class="col-span-1 sm:col-span-2 lg:col-span-4">
             <div
               class="w-full p-1 bg-slate-950/50 backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
             >
               <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                <div
+                <NuxtLink
                   v-for="index in 6"
                   :key="popularArtists[index].name"
                   class="h-48 md:h-64 lg:h-64 w-full rounded-lg p-2 bg-cover bg-center"
                   :style="{
                     backgroundImage: `url(${popularArtists[index].image})`,
                   }"
+                  :to="`/artists/${popularArtists[index].id}`"
                 >
                   <div
                     class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
@@ -215,7 +222,7 @@ async function getArtists() {
                     </p>
                     <p class="text-sm text-gray-300 text-right">Artist</p>
                   </div>
-                </div>
+                </NuxtLink>
               </div>
             </div>
           </div>
