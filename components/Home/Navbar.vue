@@ -61,7 +61,7 @@ const options = [
         Evermuzic
       </span>
       <div
-        class="hidden lg:flex absolute w-5 h-5 justify-center items-center rounded-full bg-slate-900 -right-2 cursor-pointer transition-transform duration-300"
+        class="flex absolute w-5 h-5 justify-center items-center rounded-full bg-slate-900 -right-2 cursor-pointer transition-transform duration-300"
         :class="{
           'rotate-0': navbar.isOpen,
           'rotate-180': !navbar.isOpen,

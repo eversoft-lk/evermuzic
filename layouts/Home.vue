@@ -1,8 +1,19 @@
+<script setup>
+const navbar = useNavbarStore();
+</script>
+
 <template>
   <div
-    class="w-full min-h-screen bg-gradient-to-b from-black to-[#0e1222] flex"
+    class="relative w-full min-h-screen bg-gradient-to-b from-black to-[#0e1222] flex"
   >
     <HomeNavbar />
+    <div
+      class="absolute w-full h-full bg-black/60 z-30 lg:hidden"
+      :class="{
+        hidden: !navbar.isOpen,
+      }"
+      @click="navbar.toggleNavbar"
+    ></div>
     <div
       class="flex-1 h-screen bg-cover bg-top bg-[url(/img/home-background.png)] overflow-hidden relative"
     >

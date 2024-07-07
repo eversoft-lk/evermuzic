@@ -17,5 +17,9 @@ provide("isLarge", isLarge);
 <template>
   <div>
     <NuxtPage />
+    <div>
+      <UnderDevelopment />
+      <UNotifications />
+    </div>
   </div>
 </template>

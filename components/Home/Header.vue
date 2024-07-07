@@ -6,7 +6,7 @@ const navbar = useNavbarStore();
   <div class="w-full grid grid-cols-2 md:grid-cols-3 p-5">
     <div class="flex items-center gap-3">
       <NuxtLink to="/" class="font-bold">Music</NuxtLink>
-      <NuxtLink to="/karaoke" class="font-bold">Karaoke</NuxtLink>
+      <NuxtLink to="/donation" class="font-bold">Donation</NuxtLink>
       <NuxtLink to="/feedback" class="font-bold">Feedback</NuxtLink>
     </div>
     <div class="hidden md:flex justify-center px-5">
