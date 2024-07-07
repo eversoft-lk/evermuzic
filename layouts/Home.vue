@@ -8,7 +8,7 @@ const navbar = useNavbarStore();
   >
     <HomeNavbar />
     <div
-      class="absolute w-full h-full bg-black/60 z-[60] lg:hidden"
+      class="absolute w-full h-full bg-black/60 z-30 lg:hidden"
       :class="{
         hidden: !navbar.isOpen,
       }"

@@ -43,7 +43,7 @@ const options = [
 
 <template>
   <div
-    class="w-[250px] flex h-screen flex-col bg-[#05060e] transform-[width] duration-300 z-[70]"
+    class="w-[250px] flex h-screen flex-col bg-[#05060e] transform-[width] duration-300 z-40"
     :class="{
       'w-[80px]': !navbar.isOpen,
       hidden: !navbar.isOpen && !isLarge,
