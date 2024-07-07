@@ -142,7 +142,7 @@ async function getRecommenedSongs() {
         <div class="grid gap-4 grid-cols-2 lg:grid-cols-6">
           <!-- Container for the top three items -->
           <div class="col-span-2 lg:col-span-4 space-y-4">
-            <p class="text-white text-xl font-bold">Most Popular Now</p>
+            <h2 class="text-white text-xl font-bold">Most Popular Now</h2>
 
             <USkeleton
               v-if="topSong.name == null"
