@@ -8,9 +8,11 @@ const volumeIcon = computed(() => {
 </script>
 
 <template>
-  <div class="fixed bottom-0 left-0 w-full z-50">
+  <div class="fixed bottom-0 left-0 w-full z-50 lg:z-[80]">
     <div class="relative grid grid-cols-12 w-full h-16 bg-black">
-        <div class="absolute w-full h-1 bg-gradient-to-r from-indigo-700 via-purple-500 to-blue-500 top-0"></div>
+      <div
+        class="absolute w-full h-1 bg-gradient-to-r from-indigo-700 via-purple-500 to-blue-500 top-0"
+      ></div>
       <div class="px-8 col-span-3 flex items-center gap-4">
         <div class="flex w-9 h-9">
           <img
