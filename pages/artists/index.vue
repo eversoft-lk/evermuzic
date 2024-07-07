@@ -184,7 +184,7 @@ async function getArtists() {
           v-else
         >
           <NuxtLink
-            class="col-span-1 sm:col-span-2 lg:col-span-2 p-1 bg-slate-950/50 rounded-lg shadow-lg shadow-slate-950 sm:p-5 bg-cover bg-center"
+            class="col-span-1 sm:col-span-2 lg:col-span-2 p-1 bg-slate-950/50 rounded-lg shadow-lg shadow-slate-950 sm:p-5 lg:h-full h-64 bg-cover bg-center"
             :style="{
               backgroundImage: `url(${popularArtists[0].image})`,
             }"

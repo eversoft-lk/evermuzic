@@ -11,6 +11,25 @@ const topSong = ref({
   imageUrl: null,
 });
 
+const dropdownItems = [
+  [
+    {
+      label: "Play",
+      icon: "solar:play-bold-duotone",
+    },
+    {
+      label: "Save to playlist",
+      icon: "ic:twotone-playlist-add",
+    },
+  ],
+  [
+    {
+      label: "Report",
+      icon: "solar:flag-bold",
+    },
+  ],
+];
+
 onMounted(async () => {
   Promise.all([getTrendingSongs(), getFeaturedPlaylist()]);
 });
@@ -37,7 +56,7 @@ async function getTrendingSongs() {
   items.forEach(async (item) => {
     const { data: tracks } = await useFetch(
       app.public.spotifyApi +
-        `/search?query=${item.name}&type=track&locale=en-US%2Cen%3Bq%3D0.5&offset=1&limit=1`,
+      `/search?query=${item.name}&type=track&locale=en-US%2Cen%3Bq%3D0.5&offset=1&limit=1`,
       {
         headers: {
           Authorization: `Bearer ${spotify.accessToken}`,
@@ -113,7 +132,7 @@ async function getRecommenedSongs() {
 
   const { data } = await useFetch(
     app.public.spotifyApi +
-      `/playlists/${playlistId}/tracks?offset=${randomTrackIndex}&limit=1`,
+    `/playlists/${playlistId}/tracks?offset=${randomTrackIndex}&limit=1`,
     {
       headers: {
         Authorization: `Bearer ${spotify.accessToken}`,
@@ -144,15 +163,12 @@ async function getRecommenedSongs() {
           <div class="col-span-2 lg:col-span-4 space-y-4">
             <h2 class="text-white text-xl font-bold">Most Popular Now</h2>
 
-            <USkeleton
-              v-if="topSong.name == null"
-              class="w-full h-64 p-5 md:p-8 justify-between shadow-lg shadow-slate-950 flex space-x-4"
-            />
+            <USkeleton v-if="topSong.name == null"
+              class="w-full h-64 p-5 md:p-8 justify-between shadow-lg shadow-slate-950 flex space-x-4" />
 
             <div
               class="w-full p-5 md:p-8 justify-between bg-slate-950/50 backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 flex space-x-4"
-              v-else
-            >
+              v-else>
               <div class="-mt-2">
                 <p class="text-white text-lg font-semibold">
                   {{ topSong.artist }}
@@ -160,63 +176,35 @@ async function getRecommenedSongs() {
                 <p class="text-gray-300 text-2xl line-clamp-1">
                   {{ topSong.name }}
                 </p>
-                <UButton
-                  label="Listen Now"
-                  color="black"
-                  icon="material-symbols:play-arrow-rounded"
-                  class="rounded-full mt-20"
-                />
+                <UButton label="Listen Now" color="black" icon="material-symbols:play-arrow-rounded"
+                  class="rounded-full mt-20" />
               </div>
               <div class="-mt-16">
-                <img
-                  :src="topSong.imageUrl"
-                  alt="Billie Eilish"
-                  class="w-full h-60 rounded-full object-cover"
-                />
+                <img :src="topSong.imageUrl" alt="Billie Eilish" class="w-full h-60 rounded-full object-cover" />
               </div>
             </div>
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Playlist for you</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
+              <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
               </NuxtLink>
             </div>
 
-            <div
-              class="w-full shadow-lg shadow-slate-950"
-              v-if="!featuredPlaylists.length"
-            >
+            <div class="w-full shadow-lg shadow-slate-950" v-if="!featuredPlaylists.length">
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <USkeleton
-                    v-for="index in 8"
-                    :key="index"
-                    class="flex-none h-52 w-52 rounded-lg"
-                  />
+                  <USkeleton v-for="index in 8" :key="index" class="flex-none h-52 w-52 rounded-lg" />
                 </div>
               </div>
             </div>
 
-            <div
-              class="w-full shadow-lg shadow-slate-950"
-              v-else
-            >
+            <div class="w-full shadow-lg shadow-slate-950" v-else>
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <NuxtLink
-                    v-for="playlist in featuredPlaylists"
-                    :key="playlist.name"
-                    class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{
+                  <NuxtLink v-for="playlist in featuredPlaylists" :key="playlist.name"
+                    class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center" :style="{
                       backgroundImage: `url(${playlist.images[0].url})`,
-                    }"
-                    :to="`/playlist/1/${playlist.id}`"
-                  >
-                    <div
-                      class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                    >
+                    }" :to="`/playlist/1/${playlist.id}`">
+                    <div class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg">
                       <p class="text-base text-white">{{ playlist.name }}</p>
                       <p class="text-sm text-gray-300 text-right">
                         {{ playlist.tracks.total }} tracks
@@ -228,22 +216,13 @@ async function getRecommenedSongs() {
             </div>
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">You may also like</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
+              <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
               </NuxtLink>
             </div>
             <div class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg shadow-lg shadow-slate-950">
-              <div
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
-              >
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4">
                 <template v-if="!recommendedSongs.length">
-                  <div
-                    v-for="index in 6"
-                    :key="index"
-                    class="flex gap-3 mb-1 p-2"
-                  >
+                  <div v-for="index in 6" :key="index" class="flex gap-3 mb-1 p-2">
                     <USkeleton class="w-20 h-20 rounded-lg" />
                     <div class="flex-1 flex flex-col gap-3 mt-2">
                       <USkeleton class="w-full h-2 rounded-lg" />
@@ -254,17 +233,10 @@ async function getRecommenedSongs() {
                 </template>
 
                 <template v-else>
-                  <div
-                    v-for="song in recommendedSongs"
-                    :key="song.name"
-                    class="flex justify-between p-2 hover:bg-black/30 rounded-lg"
-                  >
+                  <div v-for="song in recommendedSongs" :key="song.name"
+                    class="flex justify-between p-2 hover:bg-black/30 rounded-lg">
                     <div class="flex">
-                      <img
-                        :src="song.imageUrl"
-                        alt="icon"
-                        class="h-20 w-20 rounded-lg"
-                      />
+                      <img :src="song.imageUrl" alt="icon" class="h-20 w-20 rounded-lg" />
                       <div class="ml-2">
                         <p class="text-white">{{ song.name }}</p>
                         <p class="text-sm text-gray-400">{{ song.artist }}</p>
@@ -274,8 +246,10 @@ async function getRecommenedSongs() {
                       <p class="text-gray-300 text-sm mr-2">
                         {{ msToMin(song.duration) }}
                       </p>
-                      <div class="pb-3">
-                        <Icon name="solar:play-bold-duotone" class="text-xl" />
+                      <div class="pb-3 flex">
+                        <UDropdown :items="dropdownItems" :popper="{ arrow: true }">
+                          <Icon name="bi:three-dots-vertical" class="text-xl cursor-pointer" />
+                        </UDropdown>
                       </div>
                     </div>
                   </div>
@@ -287,17 +261,13 @@ async function getRecommenedSongs() {
           <div class="col-span-2 lg:col-span-2">
             <div class="flex justify-between">
               <p class="text-white text-xl font-bold mb-4">Trending Now</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
+              <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
               </NuxtLink>
             </div>
 
             <div
               class="bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row"
-              v-if="!trendingNow.length"
-            >
+              v-if="!trendingNow.length">
               <div v-for="index in 5" :key="index" class="flex gap-3 mb-1 p-2">
                 <USkeleton class="w-20 h-20 rounded-lg" />
                 <div class="flex-1 flex flex-col gap-3 mt-2">
@@ -310,19 +280,11 @@ async function getRecommenedSongs() {
 
             <div
               class="bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row"
-              v-else
-            >
-              <div
-                v-for="song in trendingNow"
-                :key="song.name"
-                class="flex justify-between p-2 hover:bg-black/30 rounded-lg"
-              >
+              v-else>
+              <div v-for="song in trendingNow" :key="song.name"
+                class="flex justify-between p-2 hover:bg-black/30 rounded-lg">
                 <div class="flex">
-                  <img
-                    :src="song.imageUrl"
-                    alt="icon"
-                    class="h-20 w-20 rounded-lg"
-                  />
+                  <img :src="song.imageUrl" alt="icon" class="h-20 w-20 rounded-lg" />
                   <div class="ml-2">
                     <p class="text-white">{{ song.name }}</p>
                     <p class="text-sm text-gray-400">{{ song.artist }}</p>
@@ -332,8 +294,10 @@ async function getRecommenedSongs() {
                   <p class="text-gray-300 text-sm mr-2">
                     {{ msToMin(song.duration) }}
                   </p>
-                  <div class="pb-3">
-                    <Icon name="solar:play-bold-duotone" class="text-xl" />
+                  <div class="pb-3 flex">
+                    <UDropdown :items="dropdownItems" :popper="{ arrow: true }">
+                      <Icon name="bi:three-dots-vertical" class="text-xl cursor-pointer" />
+                    </UDropdown>
                   </div>
                 </div>
               </div>
@@ -347,22 +311,29 @@ async function getRecommenedSongs() {
 
 <style scoped>
 .scroll-container::-webkit-scrollbar-track {
-  background: #0a0e18; /* Color of the scrollbar track */
+  background: #0a0e18;
+  /* Color of the scrollbar track */
 }
 
 .scroll-container::-webkit-scrollbar-thumb {
-  background-color: #888; /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Rounded corners of the scrollbar thumb */
-  border: 3px solid #0a0e18; /* Padding around the thumb */
+  background-color: #888;
+  /* Color of the scrollbar thumb */
+  border-radius: 10px;
+  /* Rounded corners of the scrollbar thumb */
+  border: 3px solid #0a0e18;
+  /* Padding around the thumb */
 }
 
 .scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color when hovering over the scrollbar thumb */
+  background: #555;
+  /* Color when hovering over the scrollbar thumb */
 }
 
 .scroll-container {
-  scrollbar-width: thin; /* Thin scrollbar */
-  scrollbar-color: #888 #0a0e18; /* Scrollbar thumb and track colors */
+  scrollbar-width: thin;
+  /* Thin scrollbar */
+  scrollbar-color: #888 #0a0e18;
+  /* Scrollbar thumb and track colors */
   scrollbar-gutter: stable;
 }
 </style>
