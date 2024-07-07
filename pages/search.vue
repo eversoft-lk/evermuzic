@@ -5,34 +5,25 @@
         <div class="grid gap-4 grid-cols-2 lg:grid-cols-6">
           <!-- Container for the top three items -->
           <div class="col-span-2 lg:col-span-4 space-y-4">
-          <div class="flex gap-2"> 
-            <UButton label="Button" name="logos:youtube" />
-            <UButton label="Button" />
+            <div class="flex gap-2">
+              <UButton to="/yt-search" label="Button" name="logos:youtube" />
+              <UButton label="Button" name="" />
             </div>
-           
+
 
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Related Artists</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
+              <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
               </NuxtLink>
             </div>
             <div
-              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
-            >
+              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950">
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <div
-                    v-for="item in playlist"
-                    :key="item.title"
+                  <div v-for="item in playlist" :key="item.title"
                     class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }"
-                  >
-                    <div
-                      class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                    >
+                    :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }">
+                    <div class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg">
                       <p class="text-base text-white">{{ item.title }}</p>
                       <p class="text-sm text-gray-300 text-right">
                         {{ item.tracks }} tracks
@@ -44,26 +35,17 @@
             </div>
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Related playlist</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
+              <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
               </NuxtLink>
             </div>
             <div
-              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
-            >
+              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950">
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <div
-                    v-for="item in playlist"
-                    :key="item.title"
+                  <div v-for="item in playlist" :key="item.title"
                     class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }"
-                  >
-                    <div
-                      class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                    >
+                    :style="{ backgroundImage: 'url(' + item.imageUrl + ')' }">
+                    <div class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg">
                       <p class="text-base text-white">{{ item.title }}</p>
                       <p class="text-sm text-gray-300 text-right">
                         {{ item.tracks }} tracks
@@ -78,27 +60,16 @@
           <div class="col-span-2 lg:col-span-2">
             <div class="flex justify-between">
               <p class="text-white text-xl font-bold mb-4">Now Playing</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
+              <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
               </NuxtLink>
             </div>
             <div
-              class="bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row"
-            >
-              <div
-                v-for="item in items"
-                :key="item.title"
-                class="flex justify-between p-1 hover:bg-slate-800 rounded-lg"
-              >
+              class="bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row">
+              <div v-for="item in items" :key="item.title"
+                class="flex justify-between p-1 hover:bg-slate-800 rounded-lg">
                 <div class="flex">
-                  <img
-                    :src="item.imageUrl"
-                    alt="icon"
-                    class="h-20 w-20 rounded-lg"
-                    :style="{ backgroundImage: `url(${item.imageUrl})` }"
-                  />
+                  <img :src="item.imageUrl" alt="icon" class="h-20 w-20 rounded-lg"
+                    :style="{ backgroundImage: `url(${item.imageUrl})` }" />
                   <div class="ml-2">
                     <p class="mb-1 text-lg text-white">{{ item.title }}</p>
                     <p class="text-gray-300">{{ item.artist }}</p>

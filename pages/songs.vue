@@ -234,7 +234,7 @@ async function getRecommenedSongs() {
                 >View All
               </NuxtLink>
             </div>
-            <div class="w-full bg-[#05060e88] backdrop-blur-lg shadow-lg shadow-slate-950">
+            <div class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg shadow-lg shadow-slate-950">
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
               >
