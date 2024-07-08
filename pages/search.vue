@@ -231,6 +231,14 @@ async function getSongs() {
               </div>
             </div>
 
+            <div class="flex justify-between pt-5">
+              <p class="text-white text-xl font-bold">Related Tracks</p>
+              <NuxtLink
+                to="/recently-played"
+                class="text-blue-600 hover:text-blue-500"
+                >View All
+              </NuxtLink>
+            </div>
             <div
               class="w-full rounded-lg bg-[#05060e88] backdrop-blur-lg shadow-lg shadow-slate-950"
             >
