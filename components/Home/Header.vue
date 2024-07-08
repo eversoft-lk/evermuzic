@@ -1,10 +1,22 @@
 <script setup>
 const navbar = useNavbarStore();
 const route = useRouter();
+const router = useRoute();
 const query = ref("");
+onMounted(() => {
+  console.log("Setting up the search query");
+  if (router.path == "/search" || router.path == "/yt-search") {
+    query.value = router.query["q"];
+  }
+});
 
 function search() {
   if (!query.value.trim()) {
+    return;
+  }
+
+  if (router.path === "/yt-search") {
+    route.push(`/yt-search?q=${query.value}`);
     return;
   }
 

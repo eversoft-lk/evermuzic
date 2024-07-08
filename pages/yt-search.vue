@@ -1,12 +1,32 @@
-<script setup>
-const query = ref(null);
+<script setup lang="ts">
+import type { LocationQueryValue } from "vue-router";
+import type { Song, Playlist } from "~/types/YT";
+
+type getSongsResponse = {
+  status: string;
+  songs: Song[];
+};
+
+type getPlaylistsResponse = {
+  status: string;
+  playlists: Playlist[];
+};
+
+const app = useRuntimeConfig();
 const route = useRoute();
+
+const query = ref<LocationQueryValue | LocationQueryValue[]>(null);
+const playlists = ref<Playlist[]>([]);
+const songs = ref<Song[]>([]);
+
 onMounted(() => {
   query.value = route.query["q"];
   if (!query.value) {
     useRouter().push("/searchs");
     return;
   }
+
+  Promise.all([getSongs(), getPlaylists()]);
 });
 watch(
   () => route.query,
@@ -15,8 +35,34 @@ watch(
     if (!query.value) {
       return;
     }
+
+    Promise.all([getSongs(), getPlaylists()]);
   }
 );
+
+async function getSongs() {
+  const { data } = await useFetch<getSongsResponse>(
+    app.public.evermuzicApi + `/songs/yt-search?q=${query.value}`
+  );
+
+  if (!data.value) {
+    return;
+  }
+
+  songs.value = data.value.songs;
+}
+
+async function getPlaylists() {
+  const { data } = await useFetch<getPlaylistsResponse>(
+    app.public.evermuzicApi + `/playlists/yt-search?q=${query.value}`
+  );
+
+  if (!data.value) {
+    return;
+  }
+
+  playlists.value = data.value.playlists;
+}
 </script>
 
 <template>
@@ -38,11 +84,11 @@ watch(
             size="sm"
           />
         </div>
-        <div class="grid gap-4 grid-cols-2 lg:grid-cols-4 mt-5">
+        <div class="grid gap-4 grid-cols-1 lg:grid-cols-6 mt-5">
           <!-- Container for the top three items -->
-          <div class="col-span-2 lg:col-span-3 space-y-4">
+          <div class="col-span-4 space-y-4">
             <div class="flex justify-between">
-              <p class="text-white text-xl font-bold">Playlist for you</p>
+              <p class="text-white text-xl font-bold">Related Playlists</p>
               <NuxtLink
                 to="/recently-played"
                 class="text-blue-600 hover:text-blue-500"
@@ -52,7 +98,7 @@ watch(
 
             <div
               class="w-full shadow-lg rounded-lg shadow-slate-950"
-              v-if="!featuredPlaylists.length"
+              v-if="!playlists.length"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
@@ -69,20 +115,22 @@ watch(
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
                   <NuxtLink
-                    v-for="playlist in featuredPlaylists"
-                    :key="playlist.name"
+                    v-for="playlist in playlists"
+                    :key="playlist.snippet.title"
                     class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
                     :style="{
-                      backgroundImage: `url(${playlist.images[0].url})`,
+                      backgroundImage: `url(${playlist.snippet.thumbnails.medium.url})`,
                     }"
                     :to="`/playlist/1/${playlist.id}`"
                   >
                     <div
                       class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
                     >
-                      <p class="text-base text-white">{{ playlist.name }}</p>
+                      <p class="text-base text-white">
+                        {{ playlist.snippet.title }}
+                      </p>
                       <p class="text-sm text-gray-300 text-right">
-                        {{ playlist.tracks.total }} tracks
+                        {{ playlist.contentDetails.itemCount }} tracks
                       </p>
                     </div>
                   </NuxtLink>
@@ -90,7 +138,7 @@ watch(
               </div>
             </div>
             <div class="flex justify-between pt-5">
-              <p class="text-white text-xl font-bold">You may also like</p>
+              <p class="text-white text-xl font-bold">Related Tracks</p>
               <NuxtLink
                 to="/recently-played"
                 class="text-blue-600 hover:text-blue-500"
@@ -103,7 +151,7 @@ watch(
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
               >
-                <template v-if="!recommendedSongs.length">
+                <template v-if="!songs.length">
                   <div
                     v-for="index in 6"
                     :key="index"
@@ -120,13 +168,13 @@ watch(
 
                 <template v-else>
                   <div
-                    v-for="song in recommendedSongs"
+                    v-for="song in songs"
                     :key="song.name"
                     class="flex justify-between p-2 hover:bg-black/30 rounded-lg"
                   >
                     <div class="flex">
                       <img
-                        :src="song.imageUrl"
+                        :src="song.thumbnail.md"
                         alt="icon"
                         class="h-20 w-20 rounded-lg"
                       />
@@ -137,7 +185,7 @@ watch(
                     </div>
                     <div class="flex flex-col justify-between items-center">
                       <p class="text-gray-300 text-sm mr-2">
-                        {{ msToMin(song.duration) }}
+                        {{ song.duration }}
                       </p>
                       <div class="pb-3">
                         <Icon name="solar:play-bold-duotone" class="text-xl" />
@@ -149,7 +197,9 @@ watch(
             </div>
           </div>
           <!-- Container for the right-side item -->
-          <div class="col-span-2 lg:col-span-2"></div>
+          <div class="col-span-2 p-5 flex">
+            <div class="border-l border-slate-700 w-full h-full px-4"></div>
+          </div>
         </div>
       </div>
     </NuxtLayout>
@@ -184,94 +234,3 @@ watch(
   scrollbar-gutter: stable;
 }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      topSong: {
-        name: "Bad Guy",
-        artist: "Billie Eilish",
-        imageUrl: "https://via.placeholder.com/150",
-      },
-      featuredPlaylists: [
-        {
-          name: "Chill Hits",
-          id: 1,
-          images: [{ url: "https://via.placeholder.com/150" }],
-          tracks: { total: 25 },
-        },
-        {
-          name: "Top Hits",
-          id: 2,
-          images: [{ url: "https://via.placeholder.com/150" }],
-          tracks: { total: 30 },
-        },
-        {
-          name: "Workout",
-          id: 3,
-          images: [{ url: "https://via.placeholder.com/150" }],
-          tracks: { total: 20 },
-        },
-        {
-          name: "Relax & Unwind",
-          id: 4,
-          images: [{ url: "https://via.placeholder.com/150" }],
-          tracks: { total: 40 },
-        },
-        {
-          name: "Relax & Unwind",
-          id: 4,
-          images: [{ url: "https://via.placeholder.com/150" }],
-          tracks: { total: 40 },
-        },
-      ],
-      recommendedSongs: [
-        {
-          name: "Blinding Lights",
-          artist: "The Weeknd",
-          duration: 200000,
-          imageUrl: "https://via.placeholder.com/150",
-        },
-        {
-          name: "Dance Monkey",
-          artist: "Tones and I",
-          duration: 210000,
-          imageUrl: "https://via.placeholder.com/150",
-        },
-        {
-          name: "Circles",
-          artist: "Post Malone",
-          duration: 230000,
-          imageUrl: "https://via.placeholder.com/150",
-        },
-        {
-          name: "Don't Start Now",
-          artist: "Dua Lipa",
-          duration: 220000,
-          imageUrl: "https://via.placeholder.com/150",
-        },
-        {
-          name: "Senorita",
-          artist: "Shawn Mendes & Camila Cabello",
-          duration: 200000,
-          imageUrl: "https://via.placeholder.com/150",
-        },
-        {
-          name: "Bad Guy",
-          artist: "Billie Eilish",
-          duration: 190000,
-          imageUrl: "https://via.placeholder.com/150",
-        },
-      ],
-    };
-  },
-  methods: {
-    msToMin(ms) {
-      const minutes = Math.floor(ms / 60000);
-      const seconds = ((ms % 60000) / 1000).toFixed(0);
-      return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-    },
-  },
-};
-</script>
