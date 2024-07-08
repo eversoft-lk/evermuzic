@@ -25,7 +25,7 @@ useHead({
               We Value Your Feedback
             </h1>
             <div class="flex justify-center items-center">
-              <img src="/img/feedback-boy.png" class="w-4/5" />
+              <img src="/img/feedback-boy.png" class="w-4/5 max-w-[320px]" />
             </div>
             <div>
               <p class="text-gray-400">

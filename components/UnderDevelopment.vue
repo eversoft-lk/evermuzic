@@ -11,6 +11,9 @@ const form = ref({
   email: "",
 });
 onMounted(() => {
+  if (localStorage.getItem("notify_me")) {
+    return;
+  }
   setTimeout(() => {
     isOpen.value = true;
   }, 2000);
@@ -40,6 +43,7 @@ async function getNotify(event: FormSubmitEvent<NotifyMeRequestType>) {
       timeout: 5000,
     });
   }
+  localStorage.setItem("notify_me", "true");
 
   form.value = {
     name: "",

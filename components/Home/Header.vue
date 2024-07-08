@@ -1,5 +1,15 @@
 <script setup>
 const navbar = useNavbarStore();
+const route = useRouter();
+const query = ref("");
+
+function search() {
+  if (!query.value.trim()) {
+    return;
+  }
+
+  route.push(`/search?q=${query.value}`);
+}
 </script>
 
 <template>
@@ -16,6 +26,8 @@ const navbar = useNavbarStore();
         size="lg"
         icon="material-symbols:search"
         class="w-full"
+        v-model="query"
+        @keyup.enter="search"
       />
     </div>
     <div class="flex items-center justify-end gap-4">

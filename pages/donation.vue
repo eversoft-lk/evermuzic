@@ -22,25 +22,16 @@ useHead({
             <h1
               class="text-2xl font-bold uppercase tracking-wider leading-tight text-shadow"
             >
-              EverMuzic | Give Us Your Valuable Donation
+              Give Us Your Valuable Donation
             </h1>
             <div class="flex justify-center items-center">
-              <img src="/img/feedback-boy.png" class="w-4/5" />
+              <img src="/img/donation.png" class="w-4/5 max-w-[230px]" />
             </div>
             <div>
               <p class="text-gray-400">
-               <p class="font-bold">Welcome to our community,</p> 
-                <br>
-                 where we believe that access to
-                valuable resources should be free for everyone. Our service
-                thrives on the kindness and generosity of people like you. Each
-                contribution, regardless of size, fuels our mission to provide
-                high-quality support and resources. Imagine the impact of your
-                gift—empowering countless individuals, fostering innovation, and
-                spreading goodwill. By donating, you're not just supporting a
-                service; you're investing in a brighter, more inclusive future.
-                Thank you for being a beacon of hope and for making a difference
-                in so many lives.
+                Support EverMuzic! Enjoy ad-free music and help us keep the
+                tunes flowing without interruptions. Donate now to enhance your
+                listening experience.
               </p>
             </div>
           </div>
