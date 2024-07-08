@@ -1,40 +1,42 @@
 <template>
     <div>
         <NuxtLayout name="home">
-            <div class="p-5 px-56">
-                <div class="col-span-2 lg:col-span-2">
-                    <div class="flex justify-between">
-                        <p class="text-white text-xl font-bold mb-4">My Playlist</p>
-                    </div>
+            <div class="flex justify-center items-center">
+                <div class="w-full p-5 max-w-2xl">
+                    <div class="col-span-2 lg:col-span-2">
+                        <div class="flex justify-between">
+                            <p class="text-white text-xl font-bold mb-4">My Playlist</p>
+                        </div>
 
-                    <div
-                        class="flex p-1 hover:bg-slate-800 rounded-lg bg-[#05060e88] backdrop-blur-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row">
-                        <div class="flex h-20 w-24 bg-slate-900 rounded-lg items-center justify-center">
-                            <Icon name="ep:circle-plus" class="rounded-lg text-[60px]" />
-                        </div>
-                        <div class="flex justify-between w-full">
-                            <div class="ml-2 flex flex-col justify-between">
-                                <p class="mb-1 text-lg text-white">Create a new Playlist</p>
+                        <div
+                            class="flex p-1 hover:bg-slate-800 rounded-lg bg-[#05060e88] backdrop-blur-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row">
+                            <div class="flex h-20 w-24 bg-slate-900 rounded-lg items-center justify-center">
+                                <Icon name="ep:circle-plus" class="rounded-lg text-[60px]" />
                             </div>
-                            <div class="flex items-center mr-5">
-                                <UButton label="Create" @click="isOpen = true" />
+                            <div class="flex justify-between w-full">
+                                <div class="ml-2 flex flex-col justify-between">
+                                    <p class="mb-1 text-lg text-white">Create a new Playlist</p>
+                                </div>
+                                <div class="flex items-center mr-5">
+                                    <UButton label="Create" @click="isOpen = true" />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <hr class="h-px my-8 bg-slate-800 border-0">
-                </div>
-                <div v-for="item in items" :key="item.title"
-                    class="flex justify-between p-1 hover:bg-slate-800 rounded-lg bg-[#05060e88] backdrop-blur-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row">
-                    <div class="flex">
-                        <img :src="item.imageUrl" alt="icon" class="h-20 w-20 rounded-lg">
-                        <div class="ml-2">
-                            <p class="mb-1 text-lg text-white">{{ item.title }}</p>
-                            <p class="text-gray-300">{{ item.artist }}</p>
-                        </div>
+                        <hr class="h-px my-8 bg-slate-800 border-0">
                     </div>
-                    <div class="flex">
-                        <p class="text-gray-300 mr-2">{{ item.duration }} songs</p>
+                    <div v-for="item in items" :key="item.title"
+                        class="flex justify-between p-1 hover:bg-slate-800 rounded-lg bg-[#05060e88] backdrop-blur-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row">
+                        <div class="flex">
+                            <img :src="item.imageUrl" alt="icon" class="h-20 w-20 rounded-lg">
+                            <div class="ml-2">
+                                <p class="mb-1 text-lg text-white">{{ item.title }}</p>
+                                <p class="text-gray-300">{{ item.artist }}</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <p class="text-gray-300 mr-2">{{ item.duration }} songs</p>
+                        </div>
                     </div>
                 </div>
             </div>
