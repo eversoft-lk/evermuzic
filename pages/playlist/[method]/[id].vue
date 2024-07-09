@@ -1,12 +1,38 @@
-<script setup>
+<script setup lang="ts">
+import type { PlaylistItem, Playlist as YTPlaylist } from "~/types/YT";
+import type { SinglePlaylist as SpotifyPlaylist } from "~/types/Spotify";
+
+type YTPlaylistResponse = {
+  status: string;
+  playlist: {
+    content: YTPlaylist;
+    items: PlaylistItem[];
+  };
+};
+
+type Playlist = {
+  name: string;
+  image: string;
+  description: string;
+  followers?: number;
+  channel?: string;
+  totalTracks: number;
+  tracks: any[];
+};
+
 const spotify = useSpotify();
 const router = useRoute();
 const app = useRuntimeConfig();
-const playlist = ref(null);
+const playlist = ref<Playlist | null>(null);
 const totalMs = ref(0);
 const loading = ref(false);
+const method = router.params.method as string;
+
 onMounted(async () => {
-  await fetchPlaylist(router.params.id, router.params.method);
+  await fetchPlaylist(
+    router.params.id as string,
+    router.params.method as string
+  );
 });
 
 const dropdownItems = [
@@ -28,30 +54,53 @@ const dropdownItems = [
   ],
 ];
 
-const columns = [
-  {
-    label: "#",
-    key: "id",
-  },
-  {
-    label: "TITLE",
-    key: "title",
-  },
-  {
-    label: "ALBUM",
-    key: "track.album.name",
-  },
-  {
-    label: "DATE ADDED",
-    key: "added_at",
-  },
-  {
-    label: "DURATION",
-    key: "duration",
-  },
-];
+const columns = computed(() => {
+  if (method === "1") {
+    return [
+      {
+        label: "#",
+        key: "id",
+      },
+      {
+        label: "TITLE",
+        key: "title",
+      },
+      {
+        label: "ALBUM",
+        key: "track.album?.name",
+      },
+      {
+        label: "DATE ADDED",
+        key: "added_at",
+      },
+      {
+        label: "DURATION",
+        key: "duration",
+      },
+    ];
+  } else {
+    return [
+      {
+        label: "#",
+        key: "id",
+      },
+      {
+        label: "TITLE",
+        key: "title",
+      },
+      {
+        label: "DATE ADDED",
+        key: "added_at",
+      },
+      {
+        label: "DURATION",
+        key: "duration",
+      },
+    ];
+  }
+});
 
-async function fetchPlaylist(id, method) {
+async function fetchPlaylist(id: string, method: string) {
   if ([0, 1, 2].indexOf(parseInt(method)) === -1) {
     console.log(id, method);
     return;
@@ -63,23 +112,30 @@ async function fetchPlaylist(id, method) {
   // 1 = spotify
   // 2 = youtube
 
-  if (method == 0) {
+  if (method === "0") {
     return;
   }
 
-  if (method == 1) {
-    console.log("Fetching from Spotify");
+  if (method === "1") {
     await fetchFromSpotify(id);
+    return;
+  }
+
+  if (method === "2") {
+    await fetchFromYoutube(id);
     return;
   }
 }
 
-async function fetchFromSpotify(id) {
-  const { data } = await useFetch(app.public.spotifyApi + `/playlists/${id}`, {
-    headers: {
-      Authorization: `Bearer ${spotify.accessToken}`,
-    },
-  });
+async function fetchFromSpotify(id: string) {
+  const { data } = await useFetch<SpotifyPlaylist>(
+    app.public.spotifyApi + `/playlists/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${spotify.accessToken}`,
+      },
+    }
+  );
 
   if (!data.value) {
     return;
@@ -112,8 +168,35 @@ async function fetchFromSpotify(id) {
   loading.value = false;
 }
 
+async function fetchFromYoutube(id: string) {
+  const { data } = await useFetch<YTPlaylistResponse>(
+    app.public.evermuzicApi + `/playlists/yt-search/${id}`
+  );
+
+  if (!data.value) {
+    return;
+  }
+
+  playlist.value = {
+    name: data.value.playlist.content.snippet.title,
+    description: data.value.playlist.content.snippet.description.slice(0, 20),
+    channel: data.value.playlist.content.snippet.channelTitle,
+    totalTracks: data.value.playlist.items.length,
+    image: data.value.playlist.content.snippet.thumbnails.high.url,
+    tracks: data.value.playlist.items.map((item, index) => {
+      return {
+        id: index + 1,
+        title: item.snippet.title,
+        track: item,
+        added_at: item.snippet.publishedAt,
+        duration: item.duration,
+      };
+    }),
+  };
+}
+
 // write a function to convert ms to human readable format (2hr 36 min)
-function msToHumanReadable(ms) {
+function msToHumanReadable(ms: number) {
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -223,15 +306,39 @@ function msToHumanReadable(ms) {
                   <div
                     class="w-12 h-12 rounded-lg bg-center bg-cover"
                     :style="{
-                      backgroundImage: `url(${row.track.album.images[0].url})`,
+                      backgroundImage: `url(${row.track.album?.images[0].url})`,
                     }"
+                    v-if="method === '1'"
                   ></div>
-                  <div class="flex flex-col justify-center">
+
+                  <div
+                    class="w-12 h-12 rounded-lg bg-center bg-cover"
+                    :style="{
+                      backgroundImage: `url(${row.track.snippet.thumbnails?.default?.url})`,
+                    }"
+                    v-else-if="method === '2'"
+                  ></div>
+                  <div
+                    class="flex flex-col justify-center"
+                    v-if="method === '1'"
+                  >
                     <p class="text-sm text-gray-200 uppercase font-bold">
                       {{ row.track.name }}
                     </p>
                     <h3 class="text-gray-400 text-xs">
                       {{ row.track.artists[0].name }}
+                    </h3>
+                  </div>
+
+                  <div
+                    class="flex flex-col justify-center"
+                    v-else-if="method === '2'"
+                  >
+                    <p class="text-sm text-gray-200 uppercase font-bold">
+                      {{ row.title }}
+                    </p>
+                    <h3 class="text-gray-400 text-xs">
+                      {{ playlist.channel }}
                     </h3>
                   </div>
                 </div>
@@ -249,8 +356,11 @@ function msToHumanReadable(ms) {
                     name="solar:download-minimalistic-outline"
                     class="text-violet-500 text-xl cursor-pointer"
                   />
-                  <p class="text-gray-400">
+                  <p class="text-gray-400" v-if="method === '1'">
                     {{ msToMin(row.track.duration_ms) }}
+                  </p>
+                  <p class="text-gray-400" v-else-if="method === '2'">
+                    {{ row.duration }}
                   </p>
                 </div>
               </template>
