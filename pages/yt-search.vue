@@ -121,7 +121,7 @@ async function getPlaylists() {
                     :style="{
                       backgroundImage: `url(${playlist.snippet.thumbnails.medium.url})`,
                     }"
-                    :to="`/playlist/1/${playlist.id}`"
+                    :to="`/playlist/2/${playlist.id}`"
                   >
                     <div
                       class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
