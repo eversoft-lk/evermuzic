@@ -51,6 +51,11 @@ async function getNotify(event: FormSubmitEvent<NotifyMeRequestType>) {
   };
   isOpen.value = false;
 }
+
+function dontShowAgain() {
+  localStorage.setItem("notify_me", "true");
+  isOpen.value = false;
+}
 </script>
 
 <template>
@@ -102,7 +107,7 @@ async function getNotify(event: FormSubmitEvent<NotifyMeRequestType>) {
                 <UButton
                   color="gray"
                   label="Stay Away From Me"
-                  @click="isOpen = false"
+                  @click="dontShowAgain"
                 />
                 <UButton label="Notify Me" type="submit" />
               </div>
