@@ -167,7 +167,7 @@ async function getRecommenedSongs() {
               class="w-full h-64 p-5 md:p-8 justify-between shadow-lg shadow-slate-950 flex space-x-4" />
 
             <div
-              class="w-full p-5 md:p-8 justify-between bg-slate-950/50 backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 flex space-x-4"
+              class="w-full p-5 md:p-8 justify-between bg-slate-950/50 rounded-lg border border-slate-900 shadow-lg shadow-slate-950 flex space-x-4"
               v-else>
               <div class="-mt-2">
                 <p class="text-white text-lg font-semibold">
@@ -219,7 +219,7 @@ async function getRecommenedSongs() {
               <NuxtLink to="/recently-played" class="text-blue-600 hover:text-blue-500">View All
               </NuxtLink>
             </div>
-            <div class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg shadow-lg shadow-slate-950">
+            <div class="w-full bg-[#05060e88] rounded-lg shadow-lg shadow-slate-950">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4">
                 <template v-if="!recommendedSongs.length">
                   <div v-for="index in 6" :key="index" class="flex gap-3 mb-1 p-2">
@@ -266,7 +266,7 @@ async function getRecommenedSongs() {
             </div>
 
             <div
-              class="bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row"
+              class="bg-[#05060e88] rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row"
               v-if="!trendingNow.length">
               <div v-for="index in 5" :key="index" class="flex gap-3 mb-1 p-2">
                 <USkeleton class="w-20 h-20 rounded-lg" />
@@ -279,7 +279,7 @@ async function getRecommenedSongs() {
             </div>
 
             <div
-              class="bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row"
+              class="bg-[#05060e88] rounded-lg border border-slate-900 shadow-lg shadow-slate-950 mb-2 flex-row"
               v-else>
               <div v-for="song in trendingNow" :key="song.name"
                 class="flex justify-between p-2 hover:bg-black/30 rounded-lg">
