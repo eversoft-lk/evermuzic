@@ -7,36 +7,10 @@
     >
       <div class="col-span-full lg:col-span-1 p-4 sm:p-8">
         <div class="flex flex-col items-center">
-          <h1 class="text-2xl xl:text-3xl uppercase font-extrabold">
+          <h1 class="text-2xl xl:text-3xl uppercase font-extrabold mb-28">
             Welcome Back
           </h1>
           <div class="w-full flex-1 mt-6">
-            <div class="flex justify-center items-center">
-              <div class="flex flex-col gap-3">
-                <UButton
-                  label="Sign In with Google"
-                  color="black"
-                  size="xl"
-                  icon="logos:google-icon"
-                />
-
-                <UButton
-                  label="Sign In with Facebook"
-                  color="black"
-                  size="xl"
-                  icon="logos:facebook"
-                />
-              </div>
-            </div>
-
-            <div class="my-6 border-b text-center">
-              <div
-                class="leading-none px-2 inline-block text-sm text-white tracking-wide font-medium bg-slate-950 transform translate-y-1/2"
-              >
-                Or sign in with e-mail
-              </div>
-            </div>
-
             <div class="mx-auto max-w-xs flex flex-col gap-3">
               <UFormGroup label="Email Or Username">
                 <UInput placeholder="Enter Your Email Or Username" />
