@@ -215,6 +215,12 @@ function msToHumanReadable(ms: number) {
 
 <template>
   <div>
+    <UHead
+      :name="playlist?.name"
+      :description="playlist?.description"
+      :image="playlist?.image"
+      type="Playlist"
+    />
     <NuxtLayout name="home">
       <main class="px-5">
         <div
@@ -287,7 +293,10 @@ function msToHumanReadable(ms: number) {
               />
               <UDropdown
                 :items="dropdownItems"
-                :popper="{ arrow: true, placement: 'bottom-end' }"
+                :popper="{
+                  arrow: true,
+                  placement: 'bottom-end',
+                }"
               >
                 <Icon name="bi:three-dots" class="text-xl cursor-pointer" />
               </UDropdown>

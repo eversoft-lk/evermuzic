@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  if (process.server) {
+  if (import.meta.server) {
     return;
   }
 
