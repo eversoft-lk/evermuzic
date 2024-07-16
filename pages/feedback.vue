@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { UForm } from '#build/components';
 import { FeedbackRequest } from '~/schema';
 import type { FeedbackRequestType } from "~/schema";
 import type { FormSubmitEvent } from "#ui/types";
