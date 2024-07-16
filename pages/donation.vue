@@ -1,4 +1,15 @@
-<script setup>
+<script setup lang="ts">
+import { SendDonation, type SendDonationType } from '~/schema';
+import type { FormSubmitEvent } from "#ui/types";
+
+type DonationResponse = {
+  response: {
+    links: {
+      href: string;
+    }[];
+  };
+};
+
 useHead({
   title: "EverMuzic | Give Us Your Valuable Donation",
   meta: [
@@ -9,6 +20,32 @@ useHead({
     },
   ],
 });
+
+const app = useRuntimeConfig();
+const isLoading = ref(false);
+const form = reactive({
+  name: "",
+  email: "",
+  amount: "",
+});
+
+async function donate(event: FormSubmitEvent<SendDonationType>) {
+  isLoading.value = true;
+  const { data } = await useFetch<DonationResponse>(
+    app.public.evermuzicApi + "/donate",
+    {
+      method: "POST",
+      body: event.data,
+    }
+  );
+
+  if (!data.value) {
+    return;
+  }
+
+  isLoading.value = false;
+  window.open(data.value.response.links[1].href, "_blank");
+}
 </script>
 
 <template>
@@ -46,27 +83,34 @@ useHead({
                   Fill The Form Below
                 </span>
               </div>
-              <form class="flex flex-col gap-5 mt-5">
-                <UFormGroup label="Full Name">
-                  <UInput placeholder="Enter Your Full Name" />
+              <UForm 
+                :schema="SendDonation"
+                :state="form"
+                class="flex flex-col gap-5 mt-5"
+                @submit="donate"
+              >
+                <UFormGroup label="Full Name" name="name">
+                  <UInput placeholder="Enter Your Full Name" v-model="form.name" />
                 </UFormGroup>
 
-                <UFormGroup label="Email Address">
-                  <UInput placeholder="Enter Your Email Address" />
+                <UFormGroup label="Email Address" name="email">
+                  <UInput placeholder="Enter Your Email Address" v-model="form.email" />
                 </UFormGroup>
 
-                <UFormGroup label="Amount">
-                  <UInput placeholder="Enter Amount" />
+                <UFormGroup label="Amount" name="amount">
+                  <UInput placeholder="Enter Amount" v-model="form.amount" type="number" />
                 </UFormGroup>
 
                 <UButton
                   label="Donate Now"
                   icon="ic:round-send"
                   size="xl"
+                  type="submit"
+                  :loading="isLoading"
                   trailing
                   block
                 />
-              </form>
+              </UForm>
             </div>
           </div>
         </div>
