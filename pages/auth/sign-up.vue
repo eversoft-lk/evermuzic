@@ -38,7 +38,7 @@ async function signUp(event: FormSubmitEvent<RegisterRequestType>) {
     );
 
     if (!data.value) {
-        const user = error.value.data.user;
+        const user = error.value?.data.user;
         if (!user) {
             toast.add({
                 id: "server_error",
@@ -51,15 +51,13 @@ async function signUp(event: FormSubmitEvent<RegisterRequestType>) {
                 actions: [
                     {
                         label: "Contact Support",
-                        onClick: () => {
-                            window
-                                .open("mailto:support@evermuzic.me", "_blank")
-                                .focus();
+                        click: () => {
+                            window?.open("mailto:support@evermuzic.me", "_blank")?.focus();
                         },
                     },
                     {
                         label: "Retry",
-                        onClick: () => {
+                        click: () => {
                             signUp(event);
                         },
                         color: "black",
@@ -94,7 +92,7 @@ async function signUp(event: FormSubmitEvent<RegisterRequestType>) {
                 actions: [
                     {
                         label: "Generate A New One",
-                        onClick: () => {
+                        click: () => {
                             generateUsername();
                         },
                         color: "black",
