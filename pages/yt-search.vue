@@ -146,7 +146,7 @@ async function getPlaylists() {
               </NuxtLink>
             </div>
             <div
-              class="w-full rounded-lg bg-[#05060e88] backdrop-blur-lg shadow-lg shadow-slate-950"
+              class="w-full rounded-lg bg-[#05060e88] shadow-lg shadow-slate-950"
             >
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
@@ -167,31 +167,16 @@ async function getPlaylists() {
                 </template>
 
                 <template v-else>
-                  <div
+                  <SongCard
                     v-for="song in songs"
+                    :id="song.id"
                     :key="song.name"
-                    class="flex justify-between p-2 hover:bg-black/30 rounded-lg"
-                  >
-                    <div class="flex">
-                      <img
-                        :src="song.thumbnail.md"
-                        alt="icon"
-                        class="h-20 w-20 rounded-lg"
-                      />
-                      <div class="ml-2">
-                        <p class="text-white">{{ song.name }}</p>
-                        <p class="text-sm text-gray-400">{{ song.artist }}</p>
-                      </div>
-                    </div>
-                    <div class="flex flex-col justify-between items-center">
-                      <p class="text-gray-300 text-sm mr-2">
-                        {{ song.duration }}
-                      </p>
-                      <div class="pb-3">
-                        <Icon name="solar:play-bold-duotone" class="text-xl" />
-                      </div>
-                    </div>
-                  </div>
+                    :name="song.name"
+                    :artist="song.artist"
+                    :image="song.thumbnail.md"
+                    :duration="song.duration"
+                    type="youtube"
+                  />
                 </template>
               </div>
             </div>

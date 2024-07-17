@@ -10,5 +10,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
 
   yt.lastPlayTime = await yt.player.getCurrentTime();
+  console.log(yt.lastPlayTime);
   return;
 });

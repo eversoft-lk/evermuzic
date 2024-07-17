@@ -5,6 +5,7 @@ type Thumbnail = {
 };
 
 export type Song = {
+  id: string;
   name: string;
   artist: string;
   thumbnail: Thumbnail;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SendDonation, type SendDonationType } from '~/schema';
+import { SendDonation, type SendDonationType } from "~/schema";
 import type { FormSubmitEvent } from "#ui/types";
 
 type DonationResponse = {
@@ -83,22 +83,33 @@ async function donate(event: FormSubmitEvent<SendDonationType>) {
                   Fill The Form Below
                 </span>
               </div>
-              <UForm 
+              <UForm
                 :schema="SendDonation"
                 :state="form"
                 class="flex flex-col gap-5 mt-5"
                 @submit="donate"
               >
                 <UFormGroup label="Full Name" name="name">
-                  <UInput placeholder="Enter Your Full Name" v-model="form.name" />
+                  <UInput
+                    placeholder="Enter Your Full Name"
+                    v-model="form.name"
+                  />
                 </UFormGroup>
 
                 <UFormGroup label="Email Address" name="email">
-                  <UInput placeholder="Enter Your Email Address" v-model="form.email" />
+                  <UInput
+                    placeholder="Enter Your Email Address"
+                    v-model="form.email"
+                  />
                 </UFormGroup>
 
                 <UFormGroup label="Amount" name="amount">
-                  <UInput placeholder="Enter Amount" v-model="form.amount" type="number" />
+                  <UInput
+                    icon="flowbite:dollar-outline"
+                    placeholder="Enter Amount"
+                    v-model="form.amount"
+                    type="number"
+                  />
                 </UFormGroup>
 
                 <UButton
