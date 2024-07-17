@@ -29,6 +29,8 @@ const navbar = useNavbarStore();
       </div>
     </div>
 
-    <Player />
+    <KeepAlive>
+      <Player />
+    </KeepAlive>
   </div>
 </template>
