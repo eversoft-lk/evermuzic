@@ -20,6 +20,7 @@ type Playlist = {
   tracks: any[];
 };
 
+const YT = usePlayer();
 const spotify = useSpotify();
 const router = useRoute();
 const app = useRuntimeConfig();
@@ -67,7 +68,7 @@ const columns = computed(() => {
       },
       {
         label: "ALBUM",
-        key: "track.album?.name",
+        key: "track.album.name",
       },
       {
         label: "DATE ADDED",
@@ -211,6 +212,44 @@ function msToHumanReadable(ms: number) {
 
   return `${hours} hr ${minutes % 60} min`;
 }
+
+function playAll() {
+  if (method === "1") {
+    const songNames = playlist.value?.tracks.map((track) => {
+      return track.title;
+    });
+    let isStarted = false;
+    YT.songs = [];
+    songNames?.forEach((song) => {
+      YT.getYTID(song).then((id) => {
+        if (id) {
+          if (!isStarted) {
+            YT.player?.loadVideoById(id);
+            YT.player?.playVideo();
+            isStarted = true;
+          }
+          YT.songs.push(id);
+        }
+      });
+    });
+  }
+
+  if (method === "2") {
+    const ids = playlist.value?.tracks.map((track) => {
+      return track.track.snippet.resourceId.videoId;
+    });
+
+    YT.songs = ids as string[];
+    YT.nowPlaying = 0;
+
+    if (!YT.isPlaying) {
+      YT.player?.loadVideoById(YT.songs[YT.nowPlaying]);
+      YT.player?.playVideo();
+      YT.isPlaying = true;
+    }
+    return;
+  }
+}
 </script>
 
 <template>
@@ -284,6 +323,7 @@ function msToHumanReadable(ms: number) {
             <div class="py-5 px-5 flex gap-7 items-center">
               <div
                 class="w-12 h-12 flex justify-center items-center rounded-full bg-indigo-500 cursor-pointer"
+                @click="playAll"
               >
                 <Icon name="solar:play-bold" class="text-xl" />
               </div>

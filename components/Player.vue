@@ -19,6 +19,11 @@ onMounted(async () => {
 
   // Handle state changes
   YT.player.on("stateChange", (event) => {
+    // when ended play next
+    if (event.data === 0) {
+      YT.next();
+    }
+
     if (event.data === 1) {
       // Playing
       YT.isPlaying = true;
@@ -35,22 +40,13 @@ const volumeIcon = computed(() => {
   if (volume.value < 50) return "material-symbols:volume-down-rounded";
   return "material-symbols:volume-up-rounded";
 });
-
-function playPause() {
+watch(volume, () => {
   if (!YT.player) {
     return;
   }
 
-  if (!YT.isPlaying) {
-    YT.player.playVideo().then(() => {
-      console.log("Playing");
-    });
-  } else {
-    YT.player.pauseVideo();
-  }
-
-  YT.isPlaying = !YT.isPlaying;
-}
+  YT.player.setVolume(volume.value);
+});
 </script>
 
 <template>

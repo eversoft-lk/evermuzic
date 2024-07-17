@@ -37,6 +37,12 @@ export const useSpotify = defineStore("spotify", {
       }
 
       // if token expired, return false
+      if (this.expiresIn === null) {
+        const expireTime = localStorage.getItem("expires_in");
+        if (expireTime) {
+          this.expiresIn = new Date(expireTime);
+        }
+      }
       if (this.isExpiresSoon) {
         return false;
       }
@@ -57,6 +63,7 @@ export const useSpotify = defineStore("spotify", {
       const expiresIn = new Date();
       expiresIn.setSeconds(expiresIn.getSeconds() + data.value.expires_in);
       this.expiresIn = expiresIn;
+      localStorage.setItem("expires_in", expiresIn.toString());
     },
   },
 });

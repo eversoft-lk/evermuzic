@@ -261,33 +261,15 @@ async function getSongs() {
                 </template>
 
                 <template v-else>
-                  <div
+                  <SongCard
                     v-for="song in songs"
                     :key="song.name"
-                    class="flex justify-between p-2 hover:bg-black/30 rounded-lg"
-                  >
-                    <div class="flex">
-                      <img
-                        :src="song.album.images[0].url"
-                        alt="icon"
-                        class="h-20 w-20 rounded-lg"
-                      />
-                      <div class="ml-2">
-                        <p class="text-white">{{ song.name }}</p>
-                        <p class="text-sm text-gray-400">
-                          {{ song.artists[0].name }}
-                        </p>
-                      </div>
-                    </div>
-                    <div class="flex flex-col justify-between items-center">
-                      <p class="text-gray-300 text-sm mr-2">
-                        {{ msToMin(song.duration_ms) }}
-                      </p>
-                      <div class="pb-3">
-                        <Icon name="solar:play-bold-duotone" class="text-xl" />
-                      </div>
-                    </div>
-                  </div>
+                    :name="song.name"
+                    :artist="song.artists[0].name"
+                    :image="song.album.images[0].url"
+                    :duration="song.duration_ms"
+                    type="spotify"
+                  />
                 </template>
               </div>
             </div>
