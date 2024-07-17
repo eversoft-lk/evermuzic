@@ -1,35 +1,36 @@
 <script setup lang="ts">
 import YouTubePlayer from "youtube-player";
 onMounted(async () => {
-  YT.player = YouTubePlayer("yt-player", {
-    playerVars: {
-      autoplay: 0,
-      controls: 0,
-      disablekb: 1,
-      enablejsapi: 1,
-      fs: 0,
-      iv_load_policy: 3,
-      modestbranding: 1,
-      playsinline: 1,
-      rel: 0,
-    },
-  });
+  if (!YT.player) {
+    YT.player = YouTubePlayer("yt-player", {
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        enablejsapi: 1,
+        fs: 0,
+        iv_load_policy: 3,
+        modestbranding: 1,
+        playsinline: 1,
+        rel: 0,
+      },
+    })
+  }
 
-  await YT.player.loadVideoById("tpCDwnmkeoY");
-
+  // Handle state changes
   YT.player.on("stateChange", (event) => {
+    // when ended play next
+    if (event.data === 0) {
+      YT.next();
+    }
+
     if (event.data === 1) {
+      // Playing
       YT.isPlaying = true;
     } else {
       YT.isPlaying = false;
     }
   });
-
-  if (YT.isPlaying) {
-    YT.player?.seekTo(YT.lastPlayTime, false).then(() => {
-      console.log("The video started from the last time");
-    });
-  }
 });
 
 const YT = usePlayer();
@@ -39,27 +40,17 @@ const volumeIcon = computed(() => {
   if (volume.value < 50) return "material-symbols:volume-down-rounded";
   return "material-symbols:volume-up-rounded";
 });
-
-function playPause() {
+watch(volume, () => {
   if (!YT.player) {
     return;
   }
 
-  if (!YT.isPlaying) {
-    YT.player.playVideo().then(() => {
-      console.log("Playing");
-    });
-  } else {
-    YT.player.pauseVideo();
-  }
-
-  YT.isPlaying = !YT.isPlaying;
-}
+  YT.player.setVolume(volume.value);
+});
 </script>
 
 <template>
   <div class="fixed bottom-0 left-0 w-full z-20 lg:z-50">
-    <div id="yt-player" class="hidden"></div>
     <div
       class="relative grid grid-cols-6 md:grid-cols-12 lg:grid-cols-12 w-full h-16 bg-black"
     >
@@ -89,15 +80,15 @@ function playPause() {
         <div class="sm:flex hidden">
           <Icon name="iconamoon:playlist-shuffle-bold" />
         </div>
-        <Icon name="tabler:player-track-prev-filled" />
+        <Icon name="tabler:player-track-prev-filled" @click="YT.prev" />
         <div
           class="w-9 h-9 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer"
-          @click="playPause"
+          @click="YT.playOrPause"
         >
           <Icon name="solar:play-bold" v-show="!YT.isPlaying" />
           <Icon name="solar:pause-bold" v-show="YT.isPlaying" />
         </div>
-        <Icon name="tabler:player-track-next-filled" />
+        <Icon name="tabler:player-track-next-filled" @click="YT.next" />
         <div class="sm:flex hidden">
           <Icon name="iconamoon:playlist-repeat-list-bold" />
         </div>
