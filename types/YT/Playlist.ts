@@ -1,36 +1,27 @@
-type Thumbnail = {
-  url: string;
-  width: number;
-  height: number;
-};
-
-type Snippet = {
-  publishedAt: string;
-  channelId: string;
-  title: string;
-  description: string;
-  thumbnails: {
-    default: Thumbnail;
-    medium: Thumbnail;
-    high: Thumbnail;
-    standard: Thumbnail;
-    maxres: Thumbnail;
-  };
-  channelTitle: string;
-  localized: {
-    title: string;
-    description: string;
-  };
-};
-
-type ContentDetails = {
-  itemCount: number;
-};
-
-export type Playlist = {
-  kind: string;
-  etag: string;
+interface Channel {
   id: string;
-  snippet: Snippet;
-  contentDetails: ContentDetails;
-};
+  name: string;
+  link: string;
+  handle: string | null;
+  verified: boolean;
+  thumbnail: string;
+}
+
+interface Video {
+  id: string;
+  title: string;
+  link: string;
+  duration: number;
+  durationString: string;
+  thumbnail: string;
+}
+
+export interface Playlist {
+  id: string;
+  title: string;
+  link: string;
+  thumbnail: string;
+  channel: Channel;
+  videoCount: number;
+  videos: Video[];
+}

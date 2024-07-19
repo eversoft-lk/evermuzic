@@ -55,8 +55,7 @@ async function playNow() {
 async function getSong() {
   let id = props.id;
   if (props.type === "spotify") {
-
-    id = await YT.getYTID(props.name as string, );
+    id = await YT.getYTID(props.name as string);
   }
 
   return id;
@@ -71,7 +70,7 @@ async function getSong() {
     <div class="flex">
       <img :src="image" alt="icon" class="h-20 w-20 rounded-lg" />
       <div class="ml-2">
-        <p class="text-white">{{ name }}</p>
+        <p class="text-white">{{ wordLimit(name as string, 5) }}</p>
         <p class="text-sm text-gray-400">{{ artist }}</p>
       </div>
     </div>

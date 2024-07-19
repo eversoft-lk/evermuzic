@@ -9,8 +9,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      evermuzicApi: process.env.EVERMUZIC_API || "http://localhost:8787/api/v1",
+      evermuzicApi: process.env.EVERMUZIC_API || "https://api.evermuzic.me/api/v1",
       spotifyApi: process.env.SPOTIFY_API || "https://api.spotify.com/v1",
+      youtubeApi: process.env.YOUTUBE_API || "https://youtube-api-nu.vercel.app/api",
     },
   },
 });

@@ -213,25 +213,24 @@ function msToHumanReadable(ms: number) {
   return `${hours} hr ${minutes % 60} min`;
 }
 
-function playAll() {
+async function playAll() {
   if (method === "1") {
     const songNames = playlist.value?.tracks.map((track) => {
       return track.title;
     });
     let isStarted = false;
     YT.songs = [];
-    songNames?.forEach((song) => {
-      YT.getYTID(song).then((id) => {
-        if (id) {
-          if (!isStarted) {
-            YT.player?.loadVideoById(id);
-            YT.player?.playVideo();
-            isStarted = true;
-          }
-          YT.songs.push(id);
+    for (const song of songNames || []) {
+      const id = await YT.getYTID(song);
+      if (id) {
+        YT.songs.push(id);
+        if (!isStarted) {
+          await YT.player?.loadVideoById(id);
+          await YT.player?.playVideo();
+          isStarted = true;
         }
-      });
-    });
+      }
+    }
   }
 
   if (method === "2") {
@@ -243,8 +242,8 @@ function playAll() {
     YT.nowPlaying = 0;
 
     if (!YT.isPlaying) {
-      YT.player?.loadVideoById(YT.songs[YT.nowPlaying]);
-      YT.player?.playVideo();
+      await YT.player?.loadVideoById(YT.songs[YT.nowPlaying]);
+      await YT.player?.playVideo();
       YT.isPlaying = true;
     }
     return;
@@ -297,16 +296,16 @@ function playAll() {
               <h1 class="text-4xl font-bold font-kanit uppercase">
                 {{ playlist.name }}
               </h1>
-              <p class="text-sm text-gray-400">
-                {{ playlist.description }}
-              </p>
+              <p class="text-sm text-gray-400" v-html="playlist.description" />
               <p class="text-xs text-gray-400">
                 <strong class="uppercase font-bold text-gray-200"
                   >EVERMUZIC</strong
                 >
                 <span class="mx-2">●</span>
-                <span>{{ playlist.followers }} Likes</span>
-                <span class="mx-2">●</span>
+                <span v-if="playlist.followers">
+                  {{ playlist.followers }} Likes
+                  <span class="mx-2">●</span>
+                </span>
                 <span
                   >{{ playlist.totalTracks }} songs,
                   {{ msToHumanReadable(totalMs) }}</span
