@@ -27,6 +27,7 @@ type TopTrackResponse = {
   tracks: SpotifyArtistTopTrack[];
 };
 
+const YT = usePlayer();
 const spotify = useSpotify();
 const app = useRuntimeConfig();
 const route = useRoute();
@@ -156,6 +157,25 @@ async function getTopTracks() {
 
   console.log(topTracks.value);
 }
+
+async function playAll() {
+  const songNames = topTracks.value?.map((track) => {
+    return track.name + " " + track.artists[0].name;
+  });
+  let isStarted = false;
+  YT.songs = [];
+  for (const song of songNames || []) {
+    const id = await YT.getYTID(song);
+    if (id) {
+      YT.songs.push(id);
+      if (!isStarted) {
+        await YT.player?.loadVideoById(id);
+        await YT.player?.playVideo();
+        isStarted = true;
+      }
+    }
+  }
+}
 </script>
 
 <template>
@@ -220,6 +240,7 @@ async function getTopTracks() {
             <div class="py-5 px-5 flex gap-7 items-center">
               <div
                 class="w-12 h-12 flex justify-center items-center rounded-full bg-indigo-500 cursor-pointer"
+                @click="playAll"
               >
                 <Icon name="solar:play-bold" class="text-xl" />
               </div>
