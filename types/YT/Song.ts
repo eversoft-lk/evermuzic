@@ -1,14 +1,21 @@
-type Thumbnail = {
-  sm: string;
-  md: string;
-  lg: string;
-};
-
-export type Song = {
+interface Channel {
   id: string;
   name: string;
-  artist: string;
-  thumbnail: Thumbnail;
-  duration: string;
-  url: string;
-};
+  link: string;
+  handle: string | null;
+  verified: boolean;
+  thumbnail: string;
+}
+
+export interface Song {
+  id: string;
+  title: string;
+  link: string;
+  thumbnail: string;
+  channel: Channel;
+  description: string;
+  views: number;
+  uploaded: string;
+  duration: number;
+  durationString: string;
+}

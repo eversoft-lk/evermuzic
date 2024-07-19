@@ -3,13 +3,11 @@ import type { LocationQueryValue } from "vue-router";
 import type { Song, Playlist } from "~/types/YT";
 
 type getSongsResponse = {
-  status: string;
-  songs: Song[];
+  result: Song[];
 };
 
 type getPlaylistsResponse = {
-  status: string;
-  playlists: Playlist[];
+  result: Playlist[];
 };
 
 const app = useRuntimeConfig();
@@ -42,26 +40,28 @@ watch(
 
 async function getSongs() {
   const { data } = await useFetch<getSongsResponse>(
-    app.public.evermuzicApi + `/songs/yt-search?q=${query.value}`
+    app.public.youtubeApi + `/videos?q=${query.value}`
   );
 
   if (!data.value) {
     return;
   }
 
-  songs.value = data.value.songs;
+  const list = data.value.result.slice(0, 6);
+
+  songs.value = list;
 }
 
 async function getPlaylists() {
   const { data } = await useFetch<getPlaylistsResponse>(
-    app.public.evermuzicApi + `/playlists/yt-search?q=${query.value}`
+    app.public.youtubeApi + `/playlists?q=${query.value}`
   );
 
   if (!data.value) {
     return;
   }
 
-  playlists.value = data.value.playlists;
+  playlists.value = data.value.result;
 }
 </script>
 
@@ -116,10 +116,10 @@ async function getPlaylists() {
                 <div class="flex space-x-2">
                   <NuxtLink
                     v-for="playlist in playlists"
-                    :key="playlist.snippet.title"
+                    :key="playlist.id"
                     class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
                     :style="{
-                      backgroundImage: `url(${playlist.snippet.thumbnails.medium.url})`,
+                      backgroundImage: `url(${playlist.thumbnail})`,
                     }"
                     :to="`/playlist/2/${playlist.id}`"
                   >
@@ -127,10 +127,10 @@ async function getPlaylists() {
                       class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
                     >
                       <p class="text-base text-white">
-                        {{ playlist.snippet.title }}
+                        {{ playlist.title }}
                       </p>
                       <p class="text-sm text-gray-300 text-right">
-                        {{ playlist.contentDetails.itemCount }} tracks
+                        {{ playlist.videoCount }} tracks
                       </p>
                     </div>
                   </NuxtLink>
@@ -170,11 +170,11 @@ async function getPlaylists() {
                   <SongCard
                     v-for="song in songs"
                     :id="song.id"
-                    :key="song.name"
-                    :name="song.name"
-                    :artist="song.artist"
-                    :image="song.thumbnail.md"
-                    :duration="song.duration"
+                    :key="song.id"
+                    :name="song.title"
+                    :artist="song.channel.name"
+                    :image="song.thumbnail"
+                    :duration="song.durationString"
                     type="youtube"
                   />
                 </template>

@@ -3,8 +3,7 @@ import type { YouTubePlayer as YouTubePlayerType } from "youtube-player/dist/typ
 import type { Song } from "~/types/YT";
 
 type getSongsResponse = {
-  status: string;
-  songs: Song[];
+  result: Song[];
 };
 
 type PlayerType = YouTubePlayerType | null;
@@ -82,14 +81,14 @@ export const usePlayer = defineStore("player", {
     },
     async getYTID(name: string) {
       const { data } = await useFetch<getSongsResponse>(
-        useRuntimeConfig().public.evermuzicApi + `/songs/yt-search?q=${name}`
+        useRuntimeConfig().public.youtubeApi + `/videos?q=${name}`
       );
-  
+
       if (!data.value) {
         return;
       }
-  
-      return data.value.songs[0].id;
-    }
+
+      return data.value.result[0].id;
+    },
   },
 });
