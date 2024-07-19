@@ -21,6 +21,18 @@ const options = [
         icon: "material-symbols:artist",
         to: "/artists",
       },
+      {
+        name: "Donation",
+        icon: "bx:bxs-donate-heart",
+        to: "/donation",
+        isMobile: true,
+      },
+      {
+        name: "Feedback",
+        icon: "bx:bxs-comment-detail",
+        to: "/feedback",
+        isMobile: true,
+      },
     ],
   },
   {

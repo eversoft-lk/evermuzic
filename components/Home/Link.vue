@@ -17,6 +17,7 @@ type Options = {
     name: string;
     icon: string;
     to: string;
+    isMobile?: boolean;
   }[];
 };
 </script>
@@ -42,6 +43,9 @@ type Options = {
         v-for="option in options.options"
         :key="option.name"
         class="flex gap-3 items-center font-semibold"
+        :class="{
+          'md:hidden': option.isMobile,
+        }"
         :to="option.to"
       >
         <template v-if="navbar.isOpen || !isLarge">
@@ -53,6 +57,9 @@ type Options = {
         <template v-else>
           <div
             class="w-[50px] h-[50px] rounded-lg flex justify-center items-center hover:bg-slate-900/30 cursor-pointer transition-colors duration-300"
+            :class="{
+              'md:hidden': option.isMobile,
+            }"
           >
             <Icon :name="option.icon" class="text-3xl" />
           </div>
