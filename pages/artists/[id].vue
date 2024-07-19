@@ -154,20 +154,29 @@ async function getTopTracks() {
       id: (index + 1).toString(),
     };
   });
-
-  console.log(topTracks.value);
 }
 
 async function playAll() {
-  const songNames = topTracks.value?.map((track) => {
-    return track.name + " " + track.artists[0].name;
+  const songs = topTracks.value?.map((track) => {
+    return {
+      name: track.name,
+      artist: track.artists[0].name,
+      thumbnail: track.album.images[0].url,
+    };
   });
   let isStarted = false;
+  YT.nowPlayingType = "artist";
+  YT.nowPlaying = 0;
   YT.songs = [];
-  for (const song of songNames || []) {
-    const id = await YT.getYTID(song);
+  for (const song of songs || []) {
+    const id = await YT.getYTID(`${song.name} ${song.artist}`);
     if (id) {
-      YT.songs.push(id);
+      YT.songs.push({
+        id,
+        name: song.name,
+        artist: song.artist,
+        thumbnail: song.thumbnail,
+      });
       if (!isStarted) {
         await YT.player?.loadVideoById(id);
         await YT.player?.playVideo();

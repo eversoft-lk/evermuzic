@@ -1,37 +1,55 @@
 import { defineStore } from "pinia";
 import type { YouTubePlayer as YouTubePlayerType } from "youtube-player/dist/types";
-import type { Song } from "~/types/YT";
+import type { Song as YTSong } from "~/types/YT";
 
 type getSongsResponse = {
-  result: Song[];
+  result: YTSong[];
 };
 
 type PlayerType = YouTubePlayerType | null;
+type NowPlaylingType = "nothing" | "song" | "playlist" | "artist";
+type Song = {
+  id: string;
+  name: string;
+  artist: string;
+  thumbnail: string;
+};
+type ErrorType = {
+  id: string;
+  name: string;
+  index: number;
+  result: YTSong[];
+} | null;
 
 export const usePlayer = defineStore("player", {
   state: () => ({
     player: null as PlayerType,
-    songs: [] as string[],
+    songs: [] as Song[],
     lastPlayTime: 0,
     isPlaying: false,
     nowPlaying: 0,
+    nowPlayingType: "nothing" as NowPlaylingType,
+    playlistId: "",
+    error: null as ErrorType,
   }),
   getters: {},
   actions: {
-    addToQueue(id: string) {
-      this.songs.push(id);
+    addToQueue(song: Song) {
+      this.songs.push(song);
     },
-    playNow(id: string) {
+    playNow(song: Song) {
       if (!this.player) {
         return;
       }
+
+      this.nowPlayingType = "song";
       // reset songs
       this.songs = [];
       this.nowPlaying = 0;
-      this.songs.push(id);
+      this.songs.push(song);
 
       // load and play new one
-      this.player.loadVideoById(this.songs[this.nowPlaying]);
+      this.player.loadVideoById(this.songs[this.nowPlaying].id);
       this.player.playVideo();
     },
     playOrPause() {
@@ -56,7 +74,7 @@ export const usePlayer = defineStore("player", {
         return;
       }
       this.nowPlaying++;
-      this.player.loadVideoById(this.songs[this.nowPlaying]);
+      this.player.loadVideoById(this.songs[this.nowPlaying].id);
       this.player.playVideo();
     },
     async prev() {
@@ -76,7 +94,7 @@ export const usePlayer = defineStore("player", {
         return;
       }
       this.nowPlaying--;
-      this.player.loadVideoById(this.songs[this.nowPlaying]);
+      this.player.loadVideoById(this.songs[this.nowPlaying].id);
       this.player.playVideo();
     },
     async getYTID(name: string) {

@@ -137,7 +137,12 @@ async function getRecommenedSongs() {
 
 async function listenNow() {
   const id = await YT.getYTID(topSong.value.name);
-  YT.playNow(id);
+  YT.playNow({
+    id,
+    name: topSong.value.name,
+    artist: topSong.value.artist,
+    thumbnail: topSong.value.imageUrl,
+  });
 }
 </script>
 
