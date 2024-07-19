@@ -25,7 +25,12 @@ const dropdownItems = [
       icon: "material-symbols:add-to-queue",
       click: async () => {
         const id = await getSong();
-        YT.addToQueue(id as string);
+        YT.addToQueue({
+          id: id as string,
+          name: props.name as string,
+          artist: props.artist as string,
+          thumbnail: props.image as string,
+        });
       },
     },
   ],
@@ -49,7 +54,12 @@ async function playNow() {
     return;
   }
 
-  YT.playNow(id);
+  YT.playNow({
+    id: id as string,
+    name: props.name as string,
+    artist: props.artist as string,
+    thumbnail: props.image as string,
+  });
 }
 
 async function getSong() {

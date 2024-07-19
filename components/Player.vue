@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import YouTubePlayer from "youtube-player";
+import type { Song } from "~/types/YT";
+
+type SearchResultType = {
+  result: Song[];
+};
+
 onMounted(async () => {
   if (!YT.player) {
     YT.player = YouTubePlayer("yt-player", {
@@ -14,25 +20,61 @@ onMounted(async () => {
         playsinline: 1,
         rel: 0,
       },
-    })
+    });
   }
 
   // Handle state changes
-  YT.player.on("stateChange", (event) => {
+  YT.player.on("stateChange", async (event) => {
     // when ended play next
     if (event.data === 0) {
       YT.next();
     }
 
+    let widthWorker: NodeJS.Timeout | null = null;
     if (event.data === 1) {
-      // Playing
+      if (YT.error) {
+        YT.error = null;
+      }
       YT.isPlaying = true;
+      await getDuration();
+      widthWorker = setInterval(async () => {
+        let currentTime = (await YT.player?.getCurrentTime()) || 0;
+        width.value = (100 / duration.value) * currentTime;
+      }, 1000);
     } else {
       YT.isPlaying = false;
+      if (widthWorker) {
+        clearInterval(widthWorker);
+      }
     }
+  });
+
+  YT.player.on("error", async (error) => {
+    if (!YT.error) {
+      const { data: searchResult } = await useFetch<SearchResultType>(
+        app.public.youtubeApi + `/videos?q=${YT.songs[YT.nowPlaying].name}`
+      );
+
+      if (!searchResult.value) {
+        YT.next();
+        return;
+      }
+
+      YT.error = {
+        id: YT.songs[YT.nowPlaying].id,
+        name: YT.songs[YT.nowPlaying].name,
+        index: 0,
+        result: searchResult.value.result,
+      };
+    }
+
+    YT.error.index++;
+    YT.player?.loadVideoById(YT.error.result[YT.error.index].id);
+    YT.player?.playVideo();
   });
 });
 
+const app = useRuntimeConfig();
 const YT = usePlayer();
 const volume = ref(45);
 const volumeIcon = computed(() => {
@@ -40,6 +82,8 @@ const volumeIcon = computed(() => {
   if (volume.value < 50) return "material-symbols:volume-down-rounded";
   return "material-symbols:volume-up-rounded";
 });
+const width = ref(0);
+const duration = ref(0);
 watch(volume, () => {
   if (!YT.player) {
     return;
@@ -47,30 +91,53 @@ watch(volume, () => {
 
   YT.player.setVolume(volume.value);
 });
+
+async function getDuration() {
+  let dur = await YT.player?.getDuration();
+  duration.value = dur || 0;
+}
 </script>
 
 <template>
   <div class="fixed bottom-0 left-0 w-full z-20 lg:z-50">
     <div
-      class="relative grid grid-cols-6 md:grid-cols-12 lg:grid-cols-12 w-full h-16 bg-black"
+      class="relative grid grid-cols-6 md:grid-cols-12 lg:grid-cols-12 w-full h-16 bg-[#04010f]"
     >
       <div
-        class="absolute w-full h-1 bg-gradient-to-r from-indigo-700 via-purple-500 to-blue-500 top-0"
+        class="absolute h-1 bg-gradient-to-r from-indigo-700 via-purple-500 to-blue-500 top-0 transition-[width] ease-in-out duration-1000"
+        :style="{
+          width: `${width}%`,
+        }"
       ></div>
       <div
         class="px-8 col-span-3 md:col-span-3 lg:col-span-3 flex items-center gap-4"
+        v-if="YT.songs[YT.nowPlaying] === undefined"
+      >
+        <USkeleton class="w-9 h-9" />
+
+        <div class="flex flex-col justify-center">
+          <USkeleton class="w-20 h-2" />
+          <USkeleton class="w-14 h-2" />
+        </div>
+      </div>
+
+      <div
+        class="px-8 col-span-3 md:col-span-3 lg:col-span-3 flex items-center gap-4"
+        v-else
       >
         <div class="flex w-9 h-9">
           <img
-            src="https://lastfm.freetls.fastly.net/i/u/64s/ed23f05a0cd03adece8f20ff689d546d.png"
+            :src="YT.songs[YT.nowPlaying]?.thumbnail"
             class="h-full rounded-lg object-cover"
           />
         </div>
         <div class="flex flex-col justify-center">
           <p class="text-sm text-gray-200 uppercase font-bold line-clamp-1">
-            Faded
+            {{ YT.songs[YT.nowPlaying]?.name }}
           </p>
-          <p class="text-xs text-gray-400 line-clamp-1">Alan Walker</p>
+          <p class="text-xs text-gray-400 line-clamp-1">
+            {{ YT.songs[YT.nowPlaying]?.artist }}
+          </p>
         </div>
       </div>
 

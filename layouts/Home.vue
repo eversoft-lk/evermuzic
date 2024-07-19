@@ -1,5 +1,6 @@
 <script setup>
 const navbar = useNavbarStore();
+const YT = usePlayer();
 </script>
 
 <template>
@@ -29,8 +30,6 @@ const navbar = useNavbarStore();
       </div>
     </div>
 
-    <KeepAlive>
-      <Player />
-    </KeepAlive>
+    <Player v-show="YT.nowPlayingType !== 'nothing'" />
   </div>
 </template>

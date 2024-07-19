@@ -28,12 +28,17 @@ const playlist = ref<Playlist | null>(null);
 const totalMs = ref(0);
 const loading = ref(false);
 const method = router.params.method as string;
+const isPlaying = ref(false);
 
 onMounted(async () => {
   await fetchPlaylist(
     router.params.id as string,
     router.params.method as string
   );
+
+  if (YT.nowPlayingType === "playlist" && YT.playlistId === router.params.id) {
+    isPlaying.value = true;
+  }
 });
 
 const dropdownItems = [
@@ -103,7 +108,6 @@ const columns = computed(() => {
 
 async function fetchPlaylist(id: string, method: string) {
   if ([0, 1, 2].indexOf(parseInt(method)) === -1) {
-    console.log(id, method);
     return;
   }
 
@@ -214,16 +218,33 @@ function msToHumanReadable(ms: number) {
 }
 
 async function playAll() {
+  if (isPlaying.value) {
+    YT.player?.pauseVideo();
+    return;
+  }
+  isPlaying.value = true;
+  YT.nowPlayingType = "playlist";
+  YT.playlistId = router.params.id as string;
   if (method === "1") {
-    const songNames = playlist.value?.tracks.map((track) => {
-      return track.title;
+    const songs = playlist.value?.tracks.map((track) => {
+      return {
+        name: track.title,
+        artist: track.track.artists[0].name,
+        thumbnail: track.track.album.images[0].url,
+      };
     });
     let isStarted = false;
+    YT.nowPlaying = 0;
     YT.songs = [];
-    for (const song of songNames || []) {
-      const id = await YT.getYTID(song);
+    for (const song of songs || []) {
+      const id = await YT.getYTID(`${song.name} ${song.artist}`);
       if (id) {
-        YT.songs.push(id);
+        YT.songs.push({
+          id,
+          name: song.name,
+          artist: song.artist,
+          thumbnail: song.thumbnail,
+        });
         if (!isStarted) {
           await YT.player?.loadVideoById(id);
           await YT.player?.playVideo();
@@ -234,15 +255,23 @@ async function playAll() {
   }
 
   if (method === "2") {
-    const ids = playlist.value?.tracks.map((track) => {
-      return track.track.snippet.resourceId.videoId;
+    if (playlist.value === null) {
+      return;
+    }
+    const songs = playlist.value.tracks.map((track) => {
+      return {
+        id: track.track.snippet.resourceId.videoId as string,
+        name: track.title as string,
+        artist: playlist.value?.channel as string,
+        thumbnail: track.track.snippet.thumbnails.default.url as string,
+      };
     });
 
-    YT.songs = ids as string[];
+    YT.songs = songs;
     YT.nowPlaying = 0;
 
     if (!YT.isPlaying) {
-      await YT.player?.loadVideoById(YT.songs[YT.nowPlaying]);
+      await YT.player?.loadVideoById(YT.songs[YT.nowPlaying].id);
       await YT.player?.playVideo();
       YT.isPlaying = true;
     }
@@ -324,7 +353,16 @@ async function playAll() {
                 class="w-12 h-12 flex justify-center items-center rounded-full bg-indigo-500 cursor-pointer"
                 @click="playAll"
               >
-                <Icon name="solar:play-bold" class="text-xl" />
+                <Icon
+                  name="solar:play-bold"
+                  class="text-xl"
+                  v-show="!isPlaying"
+                />
+                <Icon
+                  name="solar:pause-bold"
+                  class="text-xl"
+                  v-show="isPlaying"
+                />
               </div>
               <Icon
                 name="solar:heart-bold"
