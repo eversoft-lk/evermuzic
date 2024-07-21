@@ -89,11 +89,6 @@ async function getPlaylists() {
           <div class="col-span-4 space-y-4">
             <div class="flex justify-between">
               <p class="text-white text-xl font-bold">Related Playlists</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
 
             <div
@@ -139,11 +134,6 @@ async function getPlaylists() {
             </div>
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Related Tracks</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
             <div
               class="w-full rounded-lg bg-[#05060e88] shadow-lg shadow-slate-950"

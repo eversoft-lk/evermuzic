@@ -27,6 +27,7 @@ export const usePlayer = defineStore("player", {
     songs: [] as Song[],
     lastPlayTime: 0,
     isPlaying: false,
+    lastLocationBeforePlay: "",
     nowPlaying: 0,
     nowPlayingType: "nothing" as NowPlaylingType,
     playlistId: "",

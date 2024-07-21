@@ -263,7 +263,7 @@ async function playAll() {
         id: track.track.snippet.resourceId.videoId as string,
         name: track.title as string,
         artist: playlist.value?.channel as string,
-        thumbnail: track.track.snippet.thumbnails.default.url as string,
+        thumbnail: track.track.snippet.thumbnails?.default?.url as string,
       };
     });
 

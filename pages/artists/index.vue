@@ -111,11 +111,6 @@ async function getArtists() {
       <div class="p-5">
         <div class="flex justify-between pb-5">
           <p class="text-white text-xl font-bold">Popular Artists</p>
-          <NuxtLink
-            to="/recently-played"
-            class="text-blue-600 hover:text-blue-500"
-            >View All
-          </NuxtLink>
         </div>
         <div class="w-full">
           <div
@@ -152,11 +147,6 @@ async function getArtists() {
         </div>
         <div class="flex justify-between pb-5 pt-5">
           <p class="text-white text-xl font-bold">Popular Worldwide</p>
-          <NuxtLink
-            to="/recently-played"
-            class="text-blue-600 hover:text-blue-500"
-            >View All
-          </NuxtLink>
         </div>
 
         <div

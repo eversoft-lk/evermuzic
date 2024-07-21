@@ -1,5 +1,10 @@
 <template>
-  <footer class="lg:p-5 lg:pb-20">
+  <footer
+    class="lg:p-5"
+    :class="{
+      'pb-20': usePlayer().nowPlayingType !== 'nothing',
+    }"
+  >
     <div
       class="rounded-t-lg lg:rounded-lg bg-[#05060e] border border-slate-900 w-full flex flex-col bg-[url(/img/footer-img.png)] bg-no-repeat bg-contain bg-right-top px-5"
     >
