@@ -52,7 +52,7 @@ onMounted(async () => {
   YT.player.on("error", async (error) => {
     if (!YT.error) {
       const { data: searchResult } = await useFetch<SearchResultType>(
-        app.public.youtubeApi + `/videos?q=${YT.songs[YT.nowPlaying].name}`
+        app.public.youtubeApi + `/videos?q=${YT.songs[YT.nowPlaying]?.name}`
       );
 
       if (!searchResult.value) {
@@ -61,8 +61,8 @@ onMounted(async () => {
       }
 
       YT.error = {
-        id: YT.songs[YT.nowPlaying].id,
-        name: YT.songs[YT.nowPlaying].name,
+        id: YT.songs[YT.nowPlaying]?.id,
+        name: YT.songs[YT.nowPlaying]?.name,
         index: 0,
         result: searchResult.value.result,
       };
@@ -74,6 +74,7 @@ onMounted(async () => {
   });
 });
 
+const router = useRouter();
 const app = useRuntimeConfig();
 const YT = usePlayer();
 const volume = ref(45);
@@ -96,6 +97,11 @@ async function getDuration() {
   let dur = await YT.player?.getDuration();
   duration.value = dur || 0;
 }
+
+function navigateToSong() {
+  YT.lastLocationBeforePlay = router.currentRoute.value.fullPath;
+  router.push(`/song/${hyphenateText(YT.songs[YT.nowPlaying]?.name)}`);
+}
 </script>
 
 <template>
@@ -115,14 +121,15 @@ async function getDuration() {
       >
         <USkeleton class="w-9 h-9" />
 
-        <div class="flex flex-col justify-center">
+        <div class="flex flex-col justify-center gap-2">
           <USkeleton class="w-20 h-2" />
           <USkeleton class="w-14 h-2" />
         </div>
       </div>
 
       <div
-        class="px-8 col-span-3 md:col-span-3 lg:col-span-3 flex items-center gap-4"
+        class="px-8 col-span-3 md:col-span-3 lg:col-span-3 flex cursor-pointer items-center gap-4"
+        @click="navigateToSong"
         v-else
       >
         <div class="flex w-9 h-9">

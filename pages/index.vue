@@ -41,11 +41,6 @@ useHead({
           >
             <div class="flex justify-between">
               <h2 class="font-bold uppercase">Recently Played</h2>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All</NuxtLink
-              >
             </div>
             <div class="my-8">
               <Timeline>

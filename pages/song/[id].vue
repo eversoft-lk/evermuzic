@@ -1,34 +1,219 @@
+<script setup lang="ts">
+import type { Track } from "~/types/Spotify";
+
+type SearchResultType = {
+  tracks: {
+    items: Track[];
+  };
+};
+
+const YT = usePlayer();
+const app = useRuntimeConfig();
+const spotify = useSpotify();
+const route = useRoute();
+const router = useRouter();
+const song = ref(null as any);
+const isLoading = ref(true);
+const width = ref(0);
+const currentTime = ref(0);
+const widthWorker = ref<NodeJS.Timeout | null>(null);
+
+onMounted(async () => {
+  isLoading.value = true;
+
+  const name = (route.params.id as string).replace(/-/g, " ");
+  const { data } = await useFetch<SearchResultType>(
+    app.public.spotifyApi +
+      `/search?query=${name}&type=track&locale=en-US&offset=0&limit=20`,
+    {
+      headers: {
+        Authorization: `Bearer ${spotify.accessToken}`,
+      },
+    }
+  );
+  if (!data.value) {
+    return;
+  }
+  const track = data.value.tracks.items[0];
+  let artist = track.artists[0].name;
+  if (track.artists.length > 1) {
+    artist = track.artists
+      .slice(0, 2)
+      .map((artist) => artist.name)
+      .join(", & ");
+  }
+
+  song.value = {
+    name: track.name,
+    artist: artist,
+    image: track.album.images[0].url,
+    durationMs: track.duration_ms,
+  };
+  isLoading.value = false;
+
+  if (YT.isPlaying) {
+    widthWorker.value = setInterval(async () => {
+      let time = (await YT.player?.getCurrentTime()) || 0;
+      currentTime.value = time * 1000;
+      width.value = (100 / song.value.durationMs) * currentTime.value;
+    }, 1000);
+  }
+
+  YT.player?.on("stateChange", async (event) => {
+    if (event.data === 1) {
+      if (YT.songs.length <= 1) {
+        return;
+      }
+      if (YT.songs[YT.nowPlaying] === undefined) {
+        return;
+      }
+
+      router.push(`/song/${hyphenateText(YT.songs[YT.nowPlaying].name)}`);
+      widthWorker.value = setInterval(async () => {
+        let time = (await YT.player?.getCurrentTime()) || 0;
+        currentTime.value = time * 1000;
+        width.value = (100 / song.value.durationMs) * currentTime.value;
+      }, 1000);
+    } else {
+      if (widthWorker.value) {
+        clearInterval(widthWorker.value);
+      }
+    }
+  });
+});
+
+function goBack() {
+  if (YT.lastLocationBeforePlay) {
+    router.push(YT.lastLocationBeforePlay);
+  } else {
+    router.push("/");
+  }
+}
+</script>
+
 <template>
-    <div class="h-screen w-full bg-cover bg-center bg-no-repeat flex py-4 backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
-        style="background-image: url('/public/img/not-found-gradient-bg.png');">
-        <div class="flex-1 flex justify-center items-center">
-            <img src="/img/feedback-boy.png" class="w-4/5 max-w-lg bg-black rounded-xl" />
-        </div>
-
-        <div class="flex-1 flex flex-col justify-center items-center p-6">
-            <div class="w-full p-4 rounded-xl text-center bg-amber-400 bg-opacity-80">
-                <p class="text-lg md:text-2xl lg:text-4xl xl:text-6xl font-bold uppercase">Faded</p>
-                <p class="text-sm md:text-md lg:text-lg xl:text-xl">Eminem</p>
-            </div>
-            <div class="flex justify-around items-center mt-6 w-full">
-                <div class="hidden sm:block">
-                    <Icon name="iconamoon:playlist-shuffle-bold" class="text-3xl" />
-                </div>
-
-                <Icon name="tabler:player-track-prev-filled" class="text-3xl" />
-
-                <div
-                    class="w-12 h-12 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer text-3xl">
-                    <Icon name="solar:play-bold" />
-                    <Icon name="solar:pause-bold" />
-                </div>
-
-                <Icon name="tabler:player-track-next-filled" class="text-3xl" />
-
-                <div class="hidden sm:block">
-                    <Icon name="iconamoon:playlist-repeat-list-bold" class="text-3xl" />
-                </div>
-            </div>
-        </div>
+  <div
+    class="relative min-h-screen w-full flex py-20 md:py-0 justify-center items-center bg-gradient-to-b from-black to-[#0e1222]"
+  >
+    <div class="absolute top-0 left-0 p-5">
+      <NuxtLink @click="goBack" class="flex gap-3 items-center cursor-pointer">
+        <Icon
+          name="fluent:arrow-left-24-filled"
+          class="text-3xl text-gray-400"
+        />
+        <span> Go back </span>
+      </NuxtLink>
     </div>
+
+    <div v-if="isLoading" class="grid grid-cols-2 w-full max-w-[1000px]">
+      <div
+        class="col-span-full md:col-span-1 flex justify-center items-center opacity-70"
+      >
+        <USkeleton class="w-4/5 max-w-[370px] rounded-xl h-80" />
+      </div>
+
+      <div
+        class="col-span-full md:col-span-1 flex flex-col gap-8 justify-center items-center p-6"
+      >
+        <div class="w-full flex flex-col gap-3">
+          <USkeleton class="w-3/4 h-8" />
+          <USkeleton class="w-1/2 h-6" />
+        </div>
+        <div class="my-3 w-full grid gap-3">
+          <USkeleton class="w-full h-1 bg-gray-800 rounded-full" />
+          <USkeleton class="w-full h-6" />
+        </div>
+
+        <div class="flex gap-5 items-center">
+          <USkeleton
+            class="w-10 h-10 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer text-3xl"
+          />
+          <USkeleton
+            class="w-10 h-10 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer text-3xl"
+          />
+          <USkeleton
+            class="w-14 h-14 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer text-3xl"
+          />
+          <USkeleton
+            class="w-10 h-10 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer text-3xl"
+          />
+          <USkeleton
+            class="w-10 h-10 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer text-3xl"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="grid grid-cols-2 w-full max-w-[1000px]">
+      <div
+        class="col-span-full md:col-span-1 flex justify-center items-center opacity-70"
+      >
+        <img :src="song.image" class="w-4/5 max-w-[370px] rounded-xl" />
+      </div>
+
+      <div
+        class="col-span-full md:col-span-1 flex flex-col gap-8 justify-center items-center p-6"
+      >
+        <div class="w-full">
+          <h2 class="text-4xl lg:text-5xl font-bold font-kanit uppercase">
+            {{ song.name }}
+          </h2>
+          <p class="text-sm md:text-md text-gray-400">{{ song.artist }}</p>
+        </div>
+        <div class="my-3 w-full grid gap-3">
+          <div class="w-full h-1 bg-gray-800 rounded-full">
+            <div
+              class="relative w-1/3 h-full bg-gradient-to-r from-indigo-700 via-purple-500 to-blue-500 rounded-full"
+              :style="{
+                width: `${width}%`,
+              }"
+            >
+              <div
+                class="absolute w-3 h-3 rounded-full bg-blue-500 right-0 -top-1"
+              ></div>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <p class="text-sm">{{ msToMin(currentTime) }}</p>
+            <p class="text-sm">{{ msToMin(song.durationMs) }}</p>
+          </div>
+        </div>
+        <div class="flex justify-around items-center w-full">
+          <div class="hidden sm:block">
+            <Icon
+              name="iconamoon:playlist-shuffle-bold"
+              class="text-2xl cursor-pointer text-gray-400"
+            />
+          </div>
+
+          <Icon
+            name="tabler:player-track-prev-filled"
+            class="text-2xl cursor-pointer"
+            @click="YT.prev"
+          />
+
+          <div
+            class="w-14 h-14 rounded-full flex justify-center items-center bg-gray-100 text-gray-900 cursor-pointer text-3xl"
+            @click="YT.playOrPause"
+          >
+            <Icon name="solar:play-bold" v-show="!YT.isPlaying" />
+            <Icon name="solar:pause-bold" v-show="YT.isPlaying" />
+          </div>
+
+          <Icon
+            name="tabler:player-track-next-filled"
+            class="text-2xl cursor-pointer"
+            @click="YT.next"
+          />
+
+          <div class="hidden sm:block">
+            <Icon
+              name="iconamoon:playlist-repeat-list-bold"
+              class="text-2xl cursor-pointer text-gray-400"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

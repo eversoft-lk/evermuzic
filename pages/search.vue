@@ -130,11 +130,6 @@ async function getSongs() {
 
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Related Playlists</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
 
             <div
@@ -153,7 +148,7 @@ async function getSongs() {
             </div>
 
             <div
-              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
+              class="w-full bg-[#05060e88] rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
               v-else
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
@@ -181,11 +176,6 @@ async function getSongs() {
             </div>
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Related Artists</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
 
             <div
@@ -204,7 +194,7 @@ async function getSongs() {
             </div>
 
             <div
-              class="w-full bg-[#05060e88] backdrop-blur-lg rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
+              class="w-full bg-[#05060e88] rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
               v-else
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
@@ -233,14 +223,9 @@ async function getSongs() {
 
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Related Tracks</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
             <div
-              class="w-full rounded-lg bg-[#05060e88] backdrop-blur-lg shadow-lg shadow-slate-950"
+              class="w-full rounded-lg bg-[#05060e88] shadow-lg shadow-slate-950"
             >
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"

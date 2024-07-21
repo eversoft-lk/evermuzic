@@ -189,11 +189,6 @@ async function listenNow() {
             </div>
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">Playlist for you</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
 
             <div
@@ -237,11 +232,6 @@ async function listenNow() {
             </div>
             <div class="flex justify-between pt-5">
               <p class="text-white text-xl font-bold">You may also like</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
             <div
               class="w-full bg-[#05060e88] rounded-lg shadow-lg shadow-slate-950"
@@ -282,11 +272,6 @@ async function listenNow() {
           <div class="col-span-2 lg:col-span-2">
             <div class="flex justify-between">
               <p class="text-white text-xl font-bold mb-4">Trending Now</p>
-              <NuxtLink
-                to="/recently-played"
-                class="text-blue-600 hover:text-blue-500"
-                >View All
-              </NuxtLink>
             </div>
 
             <div

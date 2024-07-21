@@ -1,7 +1,18 @@
 <script setup lang="ts">
+import YouTubePlayer from "youtube-player";
+import type { Song } from "~/types/YT";
+
+type SearchResultType = {
+  result: Song[];
+};
+
+const app = useRuntimeConfig();
 const color = useColorMode();
 const YT = usePlayer();
 const ytPlayer = ref<HTMLElement>();
+const thumbWidth = ref(0);
+const duration = ref(0);
+const route = useRoute();
 
 onMounted(async () => {
   color.preference = "dark";
@@ -10,23 +21,103 @@ onMounted(async () => {
     width.value = window.innerWidth;
   });
 
-  if (YT.player) {
-    const iframe = await YT.player.getIframe();
-    ytPlayer.value?.appendChild(iframe);
+  if (!YT.player) {
+    YT.player = YouTubePlayer("yt-player", {
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        enablejsapi: 1,
+        fs: 0,
+        iv_load_policy: 3,
+        modestbranding: 1,
+        playsinline: 1,
+        rel: 0,
+      },
+    });
   }
+
+  // Handle state changes
+  YT.player.on("stateChange", async (event) => {
+    // when ended play next
+    if (event.data === 0) {
+      YT.next();
+    }
+
+    let widthWorker: NodeJS.Timeout | null = null;
+    if (event.data === 1) {
+      if (YT.error) {
+        YT.error = null;
+      }
+      YT.isPlaying = true;
+      await getDuration();
+      widthWorker = setInterval(async () => {
+        let currentTime = (await YT.player?.getCurrentTime()) || 0;
+        thumbWidth.value = (100 / duration.value) * currentTime;
+      }, 1000);
+    } else {
+      YT.isPlaying = false;
+      if (widthWorker) {
+        clearInterval(widthWorker);
+      }
+    }
+  });
+
+  YT.player.on("error", async (error) => {
+    if (!YT.error) {
+      const { data: searchResult } = await useFetch<SearchResultType>(
+        app.public.youtubeApi + `/videos?q=${YT.songs[YT.nowPlaying]?.name}`
+      );
+
+      if (!searchResult.value) {
+        YT.next();
+        return;
+      }
+
+      YT.error = {
+        id: YT.songs[YT.nowPlaying]?.id,
+        name: YT.songs[YT.nowPlaying]?.name,
+        index: 0,
+        result: searchResult.value.result,
+      };
+    }
+
+    YT.error.index++;
+    YT.player?.loadVideoById(YT.error.result[YT.error.index].id);
+    YT.player?.playVideo();
+  });
 });
 
 const width = ref(0);
 const isLarge = computed(() => width.value > 1024);
 provide("isLarge", isLarge);
+
+async function getDuration() {
+  let dur = await YT.player?.getDuration();
+  duration.value = dur || 0;
+}
+
+const isPlayerVisible = computed(() => {
+  if (YT.nowPlayingType === "nothing") {
+    return false;
+  }
+
+  const blockedRoutes = ["/song", "/auth"];
+  if (blockedRoutes.some((blockedRoute) => route.path.includes(blockedRoute))) {
+    return false;
+  }
+
+  return true;
+});
 </script>
 
 <template>
-  <div>
+  <div class="overflow-x-hidden">
     <NuxtPage />
     <div>
       <UnderDevelopment />
       <UNotifications />
+      <Player v-show="isPlayerVisible" />
       <div ref="ytPlayer" id="yt-player" class="hidden"></div>
     </div>
   </div>

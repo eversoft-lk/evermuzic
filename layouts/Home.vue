@@ -1,6 +1,5 @@
 <script setup>
 const navbar = useNavbarStore();
-const YT = usePlayer();
 </script>
 
 <template>
@@ -29,7 +28,5 @@ const YT = usePlayer();
         <HomeFooter />
       </div>
     </div>
-
-    <Player v-show="YT.nowPlayingType !== 'nothing'" />
   </div>
 </template>
