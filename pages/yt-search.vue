@@ -63,6 +63,28 @@ async function getPlaylists() {
 
   playlists.value = data.value.result;
 }
+
+function generateDescription(data: Playlist) {
+  // Array of possible description templates
+  const descriptions = [
+    `Check out the playlist "${data.title}" by ${data.channel.name}.`,
+    `Enjoy "${data.title}" with ${data.videoCount} amazing tracks.`,
+    `${data.channel.name} brings you the best with "${data.title}".`,
+    `Listen to "${data.title}" featuring hits like "${data.videos[0].title}" and more.`,
+    `Feel the rhythm with "${data.title}" on ${data.channel.name}'s channel.`,
+    `Discover new favorites with "${data.title}" by ${data.channel.name}.`,
+    `Tune into "${data.title}" for a mix of great songs.`,
+    `Explore the playlist "${data.title}" featuring tracks like "${data.videos[0].title}".`,
+    `Unwind with "${data.title}" by ${data.channel.name}.`,
+    `Get into the groove with "${data.title}" on ${data.channel.name}'s channel.`,
+  ];
+
+  // Get a random index
+  const randomIndex = Math.floor(Math.random() * descriptions.length);
+
+  // Return the random description
+  return descriptions[randomIndex];
+}
 </script>
 
 <template>
@@ -97,11 +119,20 @@ async function getPlaylists() {
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <USkeleton
-                    v-for="index in 8"
+                  <div 
+                    v-for="index in 10"
                     :key="index"
-                    class="flex-none h-52 w-52 rounded-lg"
-                  />
+                    class="flex-none w-[240px] h-[320px] flex flex-col gap-3"
+                  >
+                    <USkeleton class="w-full h-[200px] rounded-lg" />
+                    <div class="flex flex-col gap-2">
+                      <USkeleton class="w-full h-4" />
+                      <USkeleton class="w-2/3 h-4" />
+                      <USkeleton class="w-full h-2" />
+                      <USkeleton class="w-4/5 h-2" />
+                      <USkeleton class="w-1/3 h-2" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -109,7 +140,16 @@ async function getPlaylists() {
             <div class="w-full shadow-lg shadow-slate-950" v-else>
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <NuxtLink
+                  <PlaylistCard
+                    v-for="playlist in playlists"
+                    :key="playlist.id"
+                    class="flex-none"
+                    :name="playlist.title"
+                    :description="generateDescription(playlist)"
+                    :image="playlist.thumbnail"
+                    :to="`/playlist/2/${playlist.id}`"
+                  />
+                  <!-- <NuxtLink
                     v-for="playlist in playlists"
                     :key="playlist.id"
                     class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
@@ -128,7 +168,7 @@ async function getPlaylists() {
                         {{ playlist.videoCount }} tracks
                       </p>
                     </div>
-                  </NuxtLink>
+                  </NuxtLink> -->
                 </div>
               </div>
             </div>

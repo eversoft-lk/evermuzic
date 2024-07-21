@@ -12,11 +12,6 @@ const options = [
         to: "/",
       },
       {
-        name: "Songs",
-        icon: "material-symbols:headphones-rounded",
-        to: "/songs",
-      },
-      {
         name: "Artists",
         icon: "material-symbols:artist",
         to: "/artists",

@@ -138,11 +138,20 @@ async function getSongs() {
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <USkeleton
-                    v-for="index in 8"
+                  <div
+                    v-for="index in 10"
                     :key="index"
-                    class="flex-none h-52 w-52 rounded-lg"
-                  />
+                    class="flex-none w-[240px] h-[320px] flex flex-col gap-3"
+                  >
+                    <USkeleton class="w-full h-[200px] rounded-lg" />
+                    <div class="flex flex-col gap-2">
+                      <USkeleton class="w-full h-4" />
+                      <USkeleton class="w-2/3 h-4" />
+                      <USkeleton class="w-full h-2" />
+                      <USkeleton class="w-4/5 h-2" />
+                      <USkeleton class="w-1/3 h-2" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -153,24 +162,15 @@ async function getSongs() {
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <NuxtLink
+                  <PlaylistCard
                     v-for="playlist in playlists"
                     :key="playlist.id"
-                    class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{
-                      backgroundImage: `url(${playlist.images[0].url})`,
-                    }"
+                    class="flex-none"
+                    :name="playlist.name"
+                    :description="playlist.description"
+                    :image="playlist.images[0].url"
                     :to="`/playlist/1/${playlist.id}`"
-                  >
-                    <div
-                      class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                    >
-                      <p class="text-base text-white">{{ playlist.name }}</p>
-                      <p class="text-sm text-gray-300 text-right">
-                        {{ playlist.tracks.total }} tracks
-                      </p>
-                    </div>
-                  </NuxtLink>
+                  />
                 </div>
               </div>
             </div>
