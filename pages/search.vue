@@ -28,18 +28,22 @@ const query = ref<LocationQueryValue | LocationQueryValue[]>(null);
 const artists = ref<Artist[]>([]);
 const playlists = ref<Playlist[]>([]);
 const songs = ref<Track[]>([]);
-onMounted(() => {
+const isLoading = ref(false);
+
+onMounted(async () => {
   query.value = route.query["q"];
   if (!query.value) {
     useRouter().push("/searchs");
     return;
   }
 
-  Promise.all([getArtists(), getPlaylists(), getSongs()]);
+  isLoading.value = true;
+  await Promise.all([getArtists(), getPlaylists(), getSongs()]);
+  isLoading.value = false;
 });
 watch(
   () => route.query,
-  (newQueries) => {
+  async (newQueries) => {
     query.value = newQueries["q"];
     if (!query.value) {
       return;
@@ -49,7 +53,9 @@ watch(
     artists.value = [];
     songs.value = [];
 
-    Promise.all([getArtists(), getPlaylists(), getSongs()]);
+    isLoading.value = true;
+    await Promise.all([getArtists(), getPlaylists(), getSongs()]);
+    isLoading.value = false;
   }
 );
 
@@ -134,7 +140,7 @@ async function getSongs() {
 
             <div
               class="w-full shadow-lg shadow-slate-950"
-              v-if="!playlists.length"
+              v-if="!playlists.length || isLoading"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
@@ -158,7 +164,7 @@ async function getSongs() {
 
             <div
               class="w-full bg-[#05060e88] rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
-              v-else
+              v-else-if="playlists.length && !isLoading"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
@@ -180,7 +186,7 @@ async function getSongs() {
 
             <div
               class="w-full shadow-lg shadow-slate-950"
-              v-if="!artists.length"
+              v-if="!artists.length || isLoading"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
@@ -195,7 +201,7 @@ async function getSongs() {
 
             <div
               class="w-full bg-[#05060e88] rounded-lg border border-slate-900 shadow-lg shadow-slate-950"
-              v-else
+              v-else-if="artists.length && !isLoading"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
@@ -230,7 +236,7 @@ async function getSongs() {
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
               >
-                <template v-if="!songs.length">
+                <template v-if="!songs.length || isLoading">
                   <div
                     v-for="index in 6"
                     :key="index"
@@ -245,7 +251,7 @@ async function getSongs() {
                   </div>
                 </template>
 
-                <template v-else>
+                <template v-else-if="songs.length && !isLoading">
                   <SongCard
                     v-for="song in songs"
                     :key="song.name"

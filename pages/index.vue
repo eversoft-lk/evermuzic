@@ -31,7 +31,7 @@ async function getTrendingSongs() {
     return;
   }
 
-  const items = data.value.tracks.slice(0, 11);
+  const items = data.value.tracks.slice(0, 13);
 
   getTopSong(items[0].artist.name);
   topSong.value.name = items[0].name;

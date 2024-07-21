@@ -41,9 +41,7 @@ defineProps({
       <p class="text-white uppercase font-bold">
         {{ wordLimit(name, 3) }}
       </p>
-      <p class="text-gray-400 text-sm">
-        {{ wordLimit(description, 8) }}
-      </p>
+      <p class="text-gray-400 text-sm" v-html="wordLimit(description, 8)" />
     </div>
   </NuxtLink>
 </template>

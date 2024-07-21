@@ -16,25 +16,30 @@ const route = useRoute();
 const query = ref<LocationQueryValue | LocationQueryValue[]>(null);
 const playlists = ref<Playlist[]>([]);
 const songs = ref<Song[]>([]);
+const isLoading = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
   query.value = route.query["q"];
   if (!query.value) {
     useRouter().push("/searchs");
     return;
   }
 
-  Promise.all([getSongs(), getPlaylists()]);
+  isLoading.value = true;
+  await Promise.all([getSongs(), getPlaylists()]);
+  isLoading.value = false;
 });
 watch(
   () => route.query,
-  (newQueries) => {
+  async (newQueries) => {
     query.value = newQueries["q"];
     if (!query.value) {
       return;
     }
 
-    Promise.all([getSongs(), getPlaylists()]);
+    isLoading.value = true;
+    await Promise.all([getSongs(), getPlaylists()]);
+    isLoading.value = false;
   }
 );
 
@@ -115,11 +120,11 @@ function generateDescription(data: Playlist) {
 
             <div
               class="w-full shadow-lg rounded-lg shadow-slate-950"
-              v-if="!playlists.length"
+              v-if="isLoading || !playlists.length"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <div 
+                  <div
                     v-for="index in 10"
                     :key="index"
                     class="flex-none w-[240px] h-[320px] flex flex-col gap-3"
@@ -137,7 +142,10 @@ function generateDescription(data: Playlist) {
               </div>
             </div>
 
-            <div class="w-full shadow-lg shadow-slate-950" v-else>
+            <div
+              class="w-full shadow-lg shadow-slate-950"
+              v-else-if="!isLoading && playlists.length"
+            >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
                   <PlaylistCard
@@ -149,26 +157,6 @@ function generateDescription(data: Playlist) {
                     :image="playlist.thumbnail"
                     :to="`/playlist/2/${playlist.id}`"
                   />
-                  <!-- <NuxtLink
-                    v-for="playlist in playlists"
-                    :key="playlist.id"
-                    class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{
-                      backgroundImage: `url(${playlist.thumbnail})`,
-                    }"
-                    :to="`/playlist/2/${playlist.id}`"
-                  >
-                    <div
-                      class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                    >
-                      <p class="text-base text-white">
-                        {{ playlist.title }}
-                      </p>
-                      <p class="text-sm text-gray-300 text-right">
-                        {{ playlist.videoCount }} tracks
-                      </p>
-                    </div>
-                  </NuxtLink> -->
                 </div>
               </div>
             </div>
@@ -181,7 +169,7 @@ function generateDescription(data: Playlist) {
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
               >
-                <template v-if="!songs.length">
+                <template v-if="isLoading || !songs.length">
                   <div
                     v-for="index in 6"
                     :key="index"
@@ -196,7 +184,7 @@ function generateDescription(data: Playlist) {
                   </div>
                 </template>
 
-                <template v-else>
+                <template v-else-if="!isLoading && songs.length">
                   <SongCard
                     v-for="song in songs"
                     :id="song.id"
