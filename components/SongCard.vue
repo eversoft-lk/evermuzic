@@ -78,7 +78,7 @@ async function getSong() {
     @click="playNow"
   >
     <div class="flex">
-      <img :src="image" alt="icon" class="h-20 w-20 rounded-lg" />
+      <img :src="image" alt="icon" class="h-16 w-16 rounded-lg" />
       <div class="ml-2">
         <p class="text-white">{{ wordLimit(name as string, 5) }}</p>
         <p class="text-sm text-gray-400">{{ artist }}</p>
@@ -93,7 +93,7 @@ async function getSong() {
       </p>
       <div class="pb-3 flex" @click.stop>
         <UDropdown :items="dropdownItems" :popper="{ arrow: true }">
-          <Icon name="bi:three-dots-vertical" class="text-xl cursor-pointer" />
+          <Icon name="bi:three-dots-vertical" class="cursor-pointer" />
         </UDropdown>
       </div>
     </div>

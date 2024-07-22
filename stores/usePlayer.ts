@@ -23,6 +23,7 @@ type ErrorType = {
 
 export const usePlayer = defineStore("player", {
   state: () => ({
+    searchQuery: null as string | null,
     player: null as PlayerType,
     songs: [] as Song[],
     lastPlayTime: 0,

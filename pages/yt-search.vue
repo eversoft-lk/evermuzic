@@ -16,25 +16,31 @@ const route = useRoute();
 const query = ref<LocationQueryValue | LocationQueryValue[]>(null);
 const playlists = ref<Playlist[]>([]);
 const songs = ref<Song[]>([]);
+const isLoading = ref(false);
+const YT = usePlayer();
 
-onMounted(() => {
+onMounted(async () => {
   query.value = route.query["q"];
   if (!query.value) {
     useRouter().push("/searchs");
     return;
   }
 
-  Promise.all([getSongs(), getPlaylists()]);
+  isLoading.value = true;
+  await Promise.all([getSongs(), getPlaylists()]);
+  isLoading.value = false;
 });
 watch(
-  () => route.query,
-  (newQueries) => {
-    query.value = newQueries["q"];
+  () => YT.searchQuery,
+  async (newQuery) => {
+    query.value = newQuery || "";
     if (!query.value) {
       return;
     }
 
-    Promise.all([getSongs(), getPlaylists()]);
+    isLoading.value = true;
+    await Promise.all([getSongs(), getPlaylists()]);
+    isLoading.value = false;
   }
 );
 
@@ -62,6 +68,28 @@ async function getPlaylists() {
   }
 
   playlists.value = data.value.result;
+}
+
+function generateDescription(data: Playlist) {
+  // Array of possible description templates
+  const descriptions = [
+    `Check out the playlist "${data.title}" by ${data.channel.name}.`,
+    `Enjoy "${data.title}" with ${data.videoCount} amazing tracks.`,
+    `${data.channel.name} brings you the best with "${data.title}".`,
+    `Listen to "${data.title}" featuring hits like "${data.videos[0].title}" and more.`,
+    `Feel the rhythm with "${data.title}" on ${data.channel.name}'s channel.`,
+    `Discover new favorites with "${data.title}" by ${data.channel.name}.`,
+    `Tune into "${data.title}" for a mix of great songs.`,
+    `Explore the playlist "${data.title}" featuring tracks like "${data.videos[0].title}".`,
+    `Unwind with "${data.title}" by ${data.channel.name}.`,
+    `Get into the groove with "${data.title}" on ${data.channel.name}'s channel.`,
+  ];
+
+  // Get a random index
+  const randomIndex = Math.floor(Math.random() * descriptions.length);
+
+  // Return the random description
+  return descriptions[randomIndex];
 }
 </script>
 
@@ -93,42 +121,43 @@ async function getPlaylists() {
 
             <div
               class="w-full shadow-lg rounded-lg shadow-slate-950"
-              v-if="!playlists.length"
+              v-if="isLoading || !playlists.length"
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <USkeleton
-                    v-for="index in 8"
+                  <div
+                    v-for="index in 10"
                     :key="index"
-                    class="flex-none h-52 w-52 rounded-lg"
-                  />
+                    class="flex-none w-[240px] h-[320px] flex flex-col gap-3"
+                  >
+                    <USkeleton class="w-full h-[200px] rounded-lg" />
+                    <div class="flex flex-col gap-2">
+                      <USkeleton class="w-full h-4" />
+                      <USkeleton class="w-2/3 h-4" />
+                      <USkeleton class="w-full h-2" />
+                      <USkeleton class="w-4/5 h-2" />
+                      <USkeleton class="w-1/3 h-2" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="w-full shadow-lg shadow-slate-950" v-else>
+            <div
+              class="w-full shadow-lg shadow-slate-950"
+              v-else-if="!isLoading && playlists.length"
+            >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <NuxtLink
+                  <PlaylistCard
                     v-for="playlist in playlists"
                     :key="playlist.id"
-                    class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{
-                      backgroundImage: `url(${playlist.thumbnail})`,
-                    }"
+                    class="flex-none"
+                    :name="playlist.title"
+                    :description="generateDescription(playlist)"
+                    :image="playlist.thumbnail"
                     :to="`/playlist/2/${playlist.id}`"
-                  >
-                    <div
-                      class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                    >
-                      <p class="text-base text-white">
-                        {{ playlist.title }}
-                      </p>
-                      <p class="text-sm text-gray-300 text-right">
-                        {{ playlist.videoCount }} tracks
-                      </p>
-                    </div>
-                  </NuxtLink>
+                  />
                 </div>
               </div>
             </div>
@@ -141,7 +170,7 @@ async function getPlaylists() {
               <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4"
               >
-                <template v-if="!songs.length">
+                <template v-if="isLoading || !songs.length">
                   <div
                     v-for="index in 6"
                     :key="index"
@@ -156,7 +185,7 @@ async function getPlaylists() {
                   </div>
                 </template>
 
-                <template v-else>
+                <template v-else-if="!isLoading && songs.length">
                   <SongCard
                     v-for="song in songs"
                     :id="song.id"

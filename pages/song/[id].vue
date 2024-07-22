@@ -7,12 +7,19 @@ type SearchResultType = {
   };
 };
 
+type SongType = {
+  name: string;
+  artist: string;
+  image: string;
+  durationMs: number;
+} | null;
+
 const YT = usePlayer();
 const app = useRuntimeConfig();
 const spotify = useSpotify();
 const route = useRoute();
 const router = useRouter();
-const song = ref(null as any);
+const song = ref<SongType>(null);
 const isLoading = ref(true);
 const width = ref(0);
 const currentTime = ref(0);
@@ -22,6 +29,19 @@ onMounted(async () => {
   isLoading.value = true;
 
   const name = (route.params.id as string).replace(/-/g, " ");
+
+  if (YT.songs[YT.nowPlaying] !== undefined) {
+    song.value = {
+      name: YT.songs[YT.nowPlaying].name,
+      artist: YT.songs[YT.nowPlaying].artist,
+      image: YT.songs[YT.nowPlaying].thumbnail,
+      durationMs: ((await YT.player?.getDuration()) || 0) * 1000,
+    };
+    moveThumb();
+    isLoading.value = false;
+    return
+  }
+
   const { data } = await useFetch<SearchResultType>(
     app.public.spotifyApi +
       `/search?query=${name}&type=track&locale=en-US&offset=0&limit=20`,
@@ -35,6 +55,20 @@ onMounted(async () => {
     return;
   }
   const track = data.value.tracks.items[0];
+  if (track === undefined) {
+    if (YT.songs[YT.nowPlaying] === undefined) {
+      fecthFromYT(name);
+    } else {
+      song.value = {
+        name: YT.songs[YT.nowPlaying].name,
+        artist: YT.songs[YT.nowPlaying].artist,
+        image: YT.songs[YT.nowPlaying].thumbnail,
+        durationMs: ((await YT.player?.getDuration()) || 0) * 1000,
+      };
+      isLoading.value = false;
+    }
+    return;
+  }
   let artist = track.artists[0].name;
   if (track.artists.length > 1) {
     artist = track.artists
@@ -52,11 +86,10 @@ onMounted(async () => {
   isLoading.value = false;
 
   if (YT.isPlaying) {
-    widthWorker.value = setInterval(async () => {
-      let time = (await YT.player?.getCurrentTime()) || 0;
-      currentTime.value = time * 1000;
-      width.value = (100 / song.value.durationMs) * currentTime.value;
-    }, 1000);
+    if (song.value) {
+      song.value.durationMs = ((await YT.player?.getDuration()) || 0) * 1000;
+    }
+    moveThumb();
   }
 
   YT.player?.on("stateChange", async (event) => {
@@ -69,11 +102,10 @@ onMounted(async () => {
       }
 
       router.push(`/song/${hyphenateText(YT.songs[YT.nowPlaying].name)}`);
-      widthWorker.value = setInterval(async () => {
-        let time = (await YT.player?.getCurrentTime()) || 0;
-        currentTime.value = time * 1000;
-        width.value = (100 / song.value.durationMs) * currentTime.value;
-      }, 1000);
+      if (song.value) {
+        song.value.durationMs = ((await YT.player?.getDuration()) || 0) * 1000;
+      }
+      moveThumb();
     } else {
       if (widthWorker.value) {
         clearInterval(widthWorker.value);
@@ -89,6 +121,32 @@ function goBack() {
     router.push("/");
   }
 }
+
+function moveThumb() {
+  if (widthWorker.value) {
+    clearInterval(widthWorker.value);
+  }
+  widthWorker.value = setInterval(async () => {
+    let time = (await YT.player?.getCurrentTime()) || 0;
+    currentTime.value = time * 1000;
+    width.value = (100 / (song.value?.durationMs || 0)) * currentTime.value;
+  }, 1000);
+}
+
+async function prev() {
+  const time = (await YT.player?.getCurrentTime()) || 0;
+  if (time > 10) {
+    width.value = 0;
+    currentTime.value = 0;
+    YT.player?.seekTo(0, true);
+    return;
+  }
+  YT.prev();
+
+  moveThumb();
+}
+
+async function fecthFromYT(name: string) {}
 </script>
 
 <template>
@@ -105,7 +163,10 @@ function goBack() {
       </NuxtLink>
     </div>
 
-    <div v-if="isLoading" class="grid grid-cols-2 w-full max-w-[1000px]">
+    <div
+      v-if="isLoading || !song"
+      class="grid grid-cols-2 w-full max-w-[1000px]"
+    >
       <div
         class="col-span-full md:col-span-1 flex justify-center items-center opacity-70"
       >
@@ -156,7 +217,7 @@ function goBack() {
       >
         <div class="w-full">
           <h2 class="text-4xl lg:text-5xl font-bold font-kanit uppercase">
-            {{ song.name }}
+            {{ wordLimit(song.name, 5) }}
           </h2>
           <p class="text-sm md:text-md text-gray-400">{{ song.artist }}</p>
         </div>
@@ -189,7 +250,7 @@ function goBack() {
           <Icon
             name="tabler:player-track-prev-filled"
             class="text-2xl cursor-pointer"
-            @click="YT.prev"
+            @click="prev"
           />
 
           <div
