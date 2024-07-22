@@ -2,10 +2,13 @@
 const navbar = useNavbarStore();
 const route = useRouter();
 const router = useRoute();
+const YT = usePlayer();
 const query = ref("");
+
 onMounted(() => {
   if (router.path == "/search" || router.path == "/yt-search") {
     query.value = router.query["q"];
+    YT.searchQuery = query.value;
   }
 });
 
@@ -14,12 +17,18 @@ function search() {
     return;
   }
 
-  if (router.path === "/yt-search") {
-    route.push(`/yt-search?q=${query.value}`);
+  YT.searchQuery = query.value;
+
+  // This part is the reason for searching error
+  // if (router.path === "/yt-search") {
+  //   route.push(`/yt-search?q=${YT.searchQuery}`);
+  //   return;
+  // }
+
+  if (router.path === "/yt-search" || router.path === "/search") {
     return;
   }
-
-  route.push(`/search?q=${query.value}`);
+  route.push(`/search?q=${YT.searchQuery}`);
 }
 </script>
 

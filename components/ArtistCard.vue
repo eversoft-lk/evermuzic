@@ -4,8 +4,12 @@ defineProps({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
+  followers: {
+    type: Number,
+    required: true,
+  },
+  popularity: {
+    type: Number,
     required: true,
   },
   image: {
@@ -38,10 +42,24 @@ defineProps({
       </div>
     </div>
     <div class="flex-1 flex flex-col">
-      <p class="text-white uppercase font-bold font-kanit">
-        {{ wordLimit(name, 3) }}
-      </p>
-      <p class="text-gray-400 text-sm" v-html="wordLimit(description, 8)" />
+      <p class="text-white uppercase font-bold font-kanit">{{ name }}</p>
+      <div class="mt-2 grid grid-cols-5 text-gray-400 text-sm">
+        <div class="col-span-2 flex gap-1">
+          <!-- <Icon name="material-symbols:person" /> -->
+          <span>Followers</span>
+        </div>
+        <div class="col-span-3 font-semibold">
+          {{ followers.toLocaleString() }}
+        </div>
+
+        <div class="col-span-2 flex gap-1">
+          <!-- <Icon name="ic:round-music-note" /> -->
+          <span>Popularity</span>
+        </div>
+        <div class="col-span-3 font-semibold">
+          {{ popularity.toLocaleString() }}%
+        </div>
+      </div>
     </div>
   </NuxtLink>
 </template>

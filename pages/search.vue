@@ -29,6 +29,7 @@ const artists = ref<Artist[]>([]);
 const playlists = ref<Playlist[]>([]);
 const songs = ref<Track[]>([]);
 const isLoading = ref(false);
+const YT = usePlayer();
 
 onMounted(async () => {
   query.value = route.query["q"];
@@ -42,9 +43,9 @@ onMounted(async () => {
   isLoading.value = false;
 });
 watch(
-  () => route.query,
+  () => YT.searchQuery,
   async (newQueries) => {
-    query.value = newQueries["q"];
+    query.value = newQueries || "";
     if (!query.value) {
       return;
     }
@@ -190,11 +191,20 @@ async function getSongs() {
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <USkeleton
-                    v-for="index in 8"
+                  <div
+                    v-for="index in 10"
                     :key="index"
-                    class="flex-none h-52 w-52 rounded-lg"
-                  />
+                    class="flex-none w-[240px] h-[320px] flex flex-col gap-3"
+                  >
+                    <USkeleton class="w-full h-[200px] rounded-lg" />
+                    <div class="flex flex-col gap-2">
+                      <USkeleton class="w-full h-4" />
+                      <USkeleton class="w-2/3 h-4" />
+                      <USkeleton class="w-full h-2" />
+                      <USkeleton class="w-4/5 h-2" />
+                      <USkeleton class="w-1/3 h-2" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,7 +215,18 @@ async function getSongs() {
             >
               <div class="scroll-container overflow-x-auto py-1 px-1">
                 <div class="flex space-x-2">
-                  <NuxtLink
+                  <ArtistCard
+                    class="flex-none"
+                    v-for="artist in artists"
+                    :key="artist.id"
+                    :name="artist.name"
+                    :image="artist.images[0]?.url"
+                    :followers="artist.followers.total"
+                    :popularity="artist.popularity"
+                    :to="`/artists/${artist.id}`"
+                  />
+
+                  <!-- <NuxtLink
                     v-for="artist in artists"
                     :key="artist.id"
                     class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
@@ -222,7 +243,7 @@ async function getSongs() {
                         {{ artist.followers.total }} Followers
                       </p>
                     </div>
-                  </NuxtLink>
+                  </NuxtLink> -->
                 </div>
               </div>
             </div>

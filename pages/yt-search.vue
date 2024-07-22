@@ -17,6 +17,7 @@ const query = ref<LocationQueryValue | LocationQueryValue[]>(null);
 const playlists = ref<Playlist[]>([]);
 const songs = ref<Song[]>([]);
 const isLoading = ref(false);
+const YT = usePlayer();
 
 onMounted(async () => {
   query.value = route.query["q"];
@@ -30,9 +31,9 @@ onMounted(async () => {
   isLoading.value = false;
 });
 watch(
-  () => route.query,
-  async (newQueries) => {
-    query.value = newQueries["q"];
+  () => YT.searchQuery,
+  async (newQuery) => {
+    query.value = newQuery || "";
     if (!query.value) {
       return;
     }
