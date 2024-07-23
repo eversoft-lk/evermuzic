@@ -296,10 +296,12 @@ async function playAll() {
 
               <template #duration-data="{ row }">
                 <div class="flex gap-5 items-center">
-                  <Icon
-                    name="solar:download-minimalistic-outline"
-                    class="text-violet-500 text-xl cursor-pointer"
-                  />
+                  <NuxtLink  to="/download">
+                    <Icon
+                      name="solar:download-minimalistic-outline"
+                      class="text-violet-500 text-xl cursor-pointer"
+                    />
+                  </NuxtLink> 
                   <p class="text-gray-400">
                     {{ msToMin(row.duration_ms) }}
                   </p>
