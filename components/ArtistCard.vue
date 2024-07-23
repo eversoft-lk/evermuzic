@@ -1,4 +1,5 @@
-<script setup>
+<script setup lang="ts">
+const artistImage = ref<HTMLImageElement>();
 defineProps({
   name: {
     type: String,
@@ -21,6 +22,18 @@ defineProps({
     required: true,
   },
 });
+watch(artistImage, () => {
+  if (!artistImage.value) {
+    return;
+  }
+  if (artistImage.value.complete) {
+    artistImage.value.classList.remove("opacity-0");
+    return;
+  }
+  artistImage.value.addEventListener("load", () => {
+    artistImage.value?.classList.remove("opacity-0");
+  });
+});
 </script>
 
 <template>
@@ -28,12 +41,14 @@ defineProps({
     class="main-box w-[240px] h-[320px] bg-[#05060eaa] hover:bg-[#05060e] border border-slate-900 rounded-lg shadow shadow-gray-950 p-4 flex flex-col gap-2"
     :to="to"
   >
-    <div class="relative w-full h-[200px] overflow-hidden">
+    <div
+      class="relative w-full h-[200px] overflow-hidden bg-[url(/img/artist-loading.webp)] bg-cover"
+    >
       <div class="absolute w-full h-full bg-black/40 z-20"></div>
       <img
         :src="image"
-        alt="playlist"
-        class="w-full h-full object-cover playlist-img duration-300 z-10"
+        class="w-full h-full object-cover playlist-img duration-300 z-10 opacity-0 transition-[opacity,transform]"
+        ref="artistImage"
       />
       <div
         class="play-button absolute w-14 h-14 flex justify-center items-center opacity-0 -bottom-5 right-3 rounded-full bg-indigo-600 z-30 duration-300"

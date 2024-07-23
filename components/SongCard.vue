@@ -1,6 +1,7 @@
 <script setup lang="ts">
 type SongType = "spotify" | "youtube";
 
+const songImage = ref<HTMLImageElement | null>(null);
 const YT = usePlayer();
 const props = defineProps({
   type: String as PropType<SongType>,
@@ -9,6 +10,19 @@ const props = defineProps({
   image: String,
   artist: String,
   duration: String as PropType<number | string>,
+});
+watch(songImage, () => {
+  if (!songImage.value) {
+    return;
+  }
+
+  if (songImage.value.complete) {
+    songImage.value.classList.remove("opacity-0");
+    return;
+  }
+  songImage.value.addEventListener("load", () => {
+    songImage.value?.classList.remove("opacity-0");
+  });
 });
 
 const dropdownItems = [
@@ -78,7 +92,16 @@ async function getSong() {
     @click="playNow"
   >
     <div class="flex">
-      <img :src="image" alt="icon" class="h-16 w-16 rounded-lg" />
+      <div
+        class="h-16 w-16 bg-cover bg-[url(/img/song-loading.webp)] rounded-lg"
+      >
+        <img
+          ref="songImage"
+          :src="image"
+          alt="icon"
+          class="rounded-lg duration-300 opacity-0 transition-[opacity,transform]"
+        />
+      </div>
       <div class="ml-2">
         <p class="text-white">{{ wordLimit(name as string, 5) }}</p>
         <p class="text-sm text-gray-400">{{ artist }}</p>
