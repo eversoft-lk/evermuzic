@@ -29,6 +29,7 @@ type TopTrackResponse = {
   tracks: SpotifyArtistTopTrack[];
 };
 
+const artistImage = ref<HTMLImageElement>();
 const YT = usePlayer();
 const spotify = useSpotify();
 const app = useRuntimeConfig();
@@ -41,6 +42,23 @@ const topTracks = ref<SpotifyArtistTopTrack[]>([]);
 
 onMounted(() => {
   fetchArtist();
+});
+
+watch(artistImage, () => {
+  if (!artistImage.value) {
+    return;
+  }
+
+  if (artistImage.value.complete) {
+    artistImage.value.classList.remove("opacity-0");
+    return;
+  }
+  artistImage.value.addEventListener("load", () => {
+    if (!artistImage.value) {
+      return;
+    }
+    artistImage.value.classList.remove("opacity-0");
+  });
 });
 
 const dropdownItems = [
@@ -217,10 +235,15 @@ async function playAll() {
             <div
               class="col-span-full md:col-span-2 flex justify-center items-center"
             >
-              <img
-                :src="artist.image"
-                class="w-full max-w-[240px] h-full rounded-lg object-cover"
-              />
+              <div
+                class="w-[240px] min-h-[240px] rounded bg-cover bg-[url(/img/artist-loading.webp)]"
+              >
+                <img
+                  :src="artist.image"
+                  class="w-full max-w-[240px] h-full rounded-lg opacity-0 transition-opacity duration-300"
+                  ref="artistImage"
+                />
+              </div>
             </div>
 
             <div
@@ -276,12 +299,10 @@ async function playAll() {
 
               <template #title-data="{ row }">
                 <div class="flex gap-3">
-                  <div
-                    class="w-12 h-12 rounded-lg bg-center bg-cover"
-                    :style="{
-                      backgroundImage: `url(${row.album.images[0].url})`,
-                    }"
-                  ></div>
+                  <img
+                    :src="row.album.images[0].url"
+                    class="w-12 h-12 rounded-lg"
+                  />
                   <div class="flex flex-col justify-center">
                     <p class="text-sm text-gray-200 uppercase font-bold">
                       {{ row.name }}
@@ -301,12 +322,12 @@ async function playAll() {
 
               <template #duration-data="{ row }">
                 <div class="flex gap-5 items-center">
-                  <NuxtLink  to="/download">
+                  <NuxtLink to="/download">
                     <Icon
                       name="solar:download-minimalistic-outline"
                       class="text-violet-500 text-xl cursor-pointer"
                     />
-                  </NuxtLink> 
+                  </NuxtLink>
                   <p class="text-gray-400">
                     {{ msToMin(row.duration_ms) }}
                   </p>

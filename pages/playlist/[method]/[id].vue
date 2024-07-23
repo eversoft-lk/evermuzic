@@ -29,6 +29,7 @@ const totalMs = ref(0);
 const loading = ref(false);
 const method = router.params.method as string;
 const isPlaying = ref(false);
+const playlistImage = ref<HTMLImageElement>();
 
 onMounted(async () => {
   await fetchPlaylist(
@@ -39,6 +40,18 @@ onMounted(async () => {
   if (YT.nowPlayingType === "playlist" && YT.playlistId === router.params.id) {
     isPlaying.value = true;
   }
+});
+watch(playlistImage, () => {
+  if (!playlistImage.value) {
+    return;
+  }
+  if (playlistImage.value.complete) {
+    playlistImage.value.classList.remove("opacity-0");
+    return;
+  }
+  playlistImage.value.addEventListener("load", () => {
+    playlistImage.value?.classList.remove("opacity-0");
+  });
 });
 
 const dropdownItems = [
@@ -312,10 +325,15 @@ async function playAll() {
             <div
               class="col-span-full md:col-span-2 flex justify-center items-center"
             >
-              <img
-                :src="playlist.image"
-                class="w-full max-w-[240px] h-full rounded-lg object-cover"
-              />
+              <div
+                class="w-[240px] min-h-[240px] rounded bg-cover bg-[url(/img/artist-loading.webp)]"
+              >
+                <img
+                  :src="playlist.image"
+                  class="w-full max-w-[240px] h-full rounded-lg opacity-0 transition-opacity duration-300"
+                  ref="playlistImage"
+                />
+              </div>
             </div>
 
             <div
@@ -438,12 +456,12 @@ async function playAll() {
 
               <template #duration-data="{ row }">
                 <div class="flex gap-5 items-center">
-                  <NuxtLink  to="/download">
+                  <NuxtLink to="/download">
                     <Icon
                       name="solar:download-minimalistic-outline"
                       class="text-violet-500 text-xl cursor-pointer"
                     />
-                  </NuxtLink> 
+                  </NuxtLink>
                   <p class="text-gray-400" v-if="method === '1'">
                     {{ msToMin(row.track.duration_ms) }}
                   </p>

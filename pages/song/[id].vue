@@ -24,6 +24,7 @@ const isLoading = ref(true);
 const width = ref(0);
 const currentTime = ref(0);
 const widthWorker = ref<NodeJS.Timeout | null>(null);
+const songImage = ref<HTMLImageElement>();
 
 onMounted(async () => {
   isLoading.value = true;
@@ -39,7 +40,7 @@ onMounted(async () => {
     };
     moveThumb();
     isLoading.value = false;
-    return
+    return;
   }
 
   const { data } = await useFetch<SearchResultType>(
@@ -111,6 +112,18 @@ onMounted(async () => {
         clearInterval(widthWorker.value);
       }
     }
+  });
+});
+watch(songImage, () => {
+  if (!songImage.value) {
+    return;
+  }
+  if (songImage.value.complete) {
+    songImage.value.classList.remove("opacity-0");
+    return;
+  }
+  songImage.value.addEventListener("load", () => {
+    songImage.value?.classList.remove("opacity-0");
   });
 });
 
@@ -209,7 +222,15 @@ async function fecthFromYT(name: string) {}
       <div
         class="col-span-full md:col-span-1 flex justify-center items-center opacity-70"
       >
-        <img :src="song.image" class="w-4/5 max-w-[370px] rounded-xl" />
+        <div
+          class="loading-img w-[320px] min-h-[320px] flex justify-center items-center rounded bg-cover bg-[url(/img/song-loading.webp)]"
+        >
+          <img
+            :src="song.image"
+            class="w-full h-full rounded-lg opacity-0 transition-opacity duration-300"
+            ref="songImage"
+          />
+        </div>
       </div>
 
       <div
