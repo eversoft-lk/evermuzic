@@ -225,25 +225,6 @@ async function getSongs() {
                     :popularity="artist.popularity"
                     :to="`/artists/${artist.id}`"
                   />
-
-                  <!-- <NuxtLink
-                    v-for="artist in artists"
-                    :key="artist.id"
-                    class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                    :style="{
-                      backgroundImage: `url(${artist.images[0]?.url})`,
-                    }"
-                    :to="`/artists/${artist.id}`"
-                  >
-                    <div
-                      class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                    >
-                      <p class="text-base text-white">{{ artist.name }}</p>
-                      <p class="text-sm text-gray-300 text-right">
-                        {{ artist.followers.total }} Followers
-                      </p>
-                    </div>
-                  </NuxtLink> -->
                 </div>
               </div>
             </div>

@@ -8,76 +8,14 @@ type SearchResultType = {
 
 onMounted(async () => {
   if (!YT.player) {
-    YT.player = YouTubePlayer("yt-player", {
-      playerVars: {
-        autoplay: 0,
-        controls: 0,
-        disablekb: 1,
-        enablejsapi: 1,
-        fs: 0,
-        iv_load_policy: 3,
-        modestbranding: 1,
-        playsinline: 1,
-        rel: 0,
-      },
-    });
+    console.log("Player not found");
+    return;
   }
-
-  // Handle state changes
-  YT.player.on("stateChange", async (event) => {
-    // when ended play next
-    if (event.data === 0) {
-      YT.next();
-    }
-
-    let widthWorker: NodeJS.Timeout | null = null;
-    if (event.data === 1) {
-      if (YT.error) {
-        YT.error = null;
-      }
-      YT.isPlaying = true;
-      await getDuration();
-      widthWorker = setInterval(async () => {
-        let currentTime = (await YT.player?.getCurrentTime()) || 0;
-        width.value = (100 / duration.value) * currentTime;
-      }, 1000);
-    } else {
-      YT.isPlaying = false;
-      if (widthWorker) {
-        clearInterval(widthWorker);
-      }
-    }
-  });
-
-  YT.player.on("error", async (error) => {
-    if (!YT.error) {
-      const { data: searchResult } = await useFetch<SearchResultType>(
-        app.public.youtubeApi + `/videos?q=${YT.songs[YT.nowPlaying]?.name}`
-      );
-
-      if (!searchResult.value) {
-        YT.next();
-        return;
-      }
-
-      YT.error = {
-        id: YT.songs[YT.nowPlaying]?.id,
-        name: YT.songs[YT.nowPlaying]?.name,
-        index: 0,
-        result: searchResult.value.result,
-      };
-    }
-
-    YT.error.index++;
-    YT.player?.loadVideoById(YT.error.result[YT.error.index].id);
-    YT.player?.playVideo();
-  });
 });
 
 const router = useRouter();
-const app = useRuntimeConfig();
 const YT = usePlayer();
-const volume = ref(45);
+const volume = ref(50);
 const volumeIcon = computed(() => {
   if (volume.value === 0) return "material-symbols:volume-off-rounded";
   if (volume.value < 50) return "material-symbols:volume-down-rounded";
@@ -92,6 +30,34 @@ watch(volume, () => {
 
   YT.player.setVolume(volume.value);
 });
+watch(
+  () => YT.player,
+  () => {
+    if (!YT.player) {
+      return;
+    }
+
+    YT.player.setVolume(volume.value);
+
+    // Handle thumb changes
+    YT.player.on("stateChange", async (event) => {
+      let widthWorker: NodeJS.Timeout | null = null;
+      if (event.data === 1) {
+        YT.isPlaying = true;
+        await getDuration();
+        widthWorker = setInterval(async () => {
+          let currentTime = (await YT.player?.getCurrentTime()) || 0;
+          width.value = (100 / duration.value) * currentTime;
+        }, 1000);
+      } else {
+        YT.isPlaying = false;
+        if (widthWorker) {
+          clearInterval(widthWorker);
+        }
+      }
+    });
+  }
+);
 
 async function getDuration() {
   let dur = await YT.player?.getDuration();
