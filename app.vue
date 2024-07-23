@@ -44,22 +44,13 @@ onMounted(async () => {
       YT.next();
     }
 
-    let widthWorker: NodeJS.Timeout | null = null;
     if (event.data === 1) {
       if (YT.error) {
         YT.error = null;
       }
       YT.isPlaying = true;
-      await getDuration();
-      widthWorker = setInterval(async () => {
-        let currentTime = (await YT.player?.getCurrentTime()) || 0;
-        thumbWidth.value = (100 / duration.value) * currentTime;
-      }, 1000);
     } else {
       YT.isPlaying = false;
-      if (widthWorker) {
-        clearInterval(widthWorker);
-      }
     }
   });
 
@@ -91,11 +82,6 @@ onMounted(async () => {
 const width = ref(0);
 const isLarge = computed(() => width.value > 1024);
 provide("isLarge", isLarge);
-
-async function getDuration() {
-  let dur = await YT.player?.getDuration();
-  duration.value = dur || 0;
-}
 
 const isPlayerVisible = computed(() => {
   if (YT.nowPlayingType === "nothing") {

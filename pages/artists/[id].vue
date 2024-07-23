@@ -17,6 +17,8 @@ type RelatedArtist = {
   id: string;
   name: string;
   image: string;
+  followers: number;
+  popularity: number;
 };
 
 type RelatedArtistsResponse = {
@@ -130,6 +132,8 @@ async function getRelatedArtists() {
       id: artist.id,
       name: artist.name,
       image: artist.images[0].url,
+      followers: artist.followers.total,
+      popularity: artist.popularity,
     });
   });
 }
@@ -227,7 +231,8 @@ async function playAll() {
                 {{ artist.name }}
               </h1>
               <p class="text-xs text-gray-400">
-                <span>{{ artist.followers }} Followers</span> on spotify
+                <span>{{ artist.followers.toLocaleString() }} Followers</span>
+                on spotify
               </p>
               <p class="text-xs text-gray-400">
                 <strong class="uppercase font-bold text-gray-200"
@@ -315,26 +320,39 @@ async function playAll() {
           <div class="flex flex-col p-5 md:p-10 bg-black/40">
             <h2 class="text-white text-xl font-bold">Related Artists</h2>
             <div
+              v-if="relatedArtists.length < 10"
               class="scroll-container overflow-x-auto py-1 px-1 mt-5"
-              v-if="relatedArtists.length > 0"
             >
               <div class="flex space-x-2">
-                <NuxtLink
+                <div
+                  v-for="index in 10"
+                  :key="index"
+                  class="flex-none w-[240px] h-[320px] flex flex-col gap-3"
+                >
+                  <USkeleton class="w-full h-[200px] rounded-lg" />
+                  <div class="flex flex-col gap-2">
+                    <USkeleton class="w-full h-4" />
+                    <USkeleton class="w-2/3 h-4" />
+                    <USkeleton class="w-full h-2" />
+                    <USkeleton class="w-4/5 h-2" />
+                    <USkeleton class="w-1/3 h-2" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-container overflow-x-auto py-1 px-1 mt-5" v-else>
+              <div class="flex space-x-2">
+                <ArtistCard
+                  class="flex-none"
                   v-for="artist in relatedArtists"
                   :key="artist.id"
-                  class="flex-none h-52 w-52 rounded-lg p-2 bg-cover bg-center"
-                  :style="{
-                    backgroundImage: `url(${artist.image})`,
-                  }"
+                  :name="artist.name"
+                  :image="artist.image"
+                  :followers="artist.followers"
+                  :popularity="artist.popularity"
                   :to="`/artists/${artist.id}`"
-                >
-                  <div
-                    class="flex flex-col justify-between h-full bg-black bg-opacity-50 p-2 rounded-lg"
-                  >
-                    <p class="text-base text-white">{{ artist.name }}</p>
-                    <p class="text-sm text-gray-300 text-right">tracks</p>
-                  </div>
-                </NuxtLink>
+                />
               </div>
             </div>
           </div>
