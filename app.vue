@@ -6,6 +6,41 @@ type SearchResultType = {
   result: Song[];
 };
 
+useHead({
+  meta: [
+    {
+      name: "monetag",
+      content: "e8ec2c262bdcc6e4a5adb0ef21759ba9",
+    },
+  ],
+  script: [
+    {
+      src: "/js/monetag/1-in-page-push.js",
+      "data-cfasync": false,
+      type: "text/javascript",
+    },
+    {
+      src: "/js/monetag/2-in-page-push.js",
+    },
+    {
+      src: "/js/monetag/3-vignette.js",
+      "data-cfasync": false,
+      type: "text/javascript",
+    },
+    {
+      src: "/js/monetag/4-vignette.js",
+    },
+    {
+      async: true,
+      "data-cfasync": false,
+      src: "//thubanoa.com/1?z=7776412",
+    },
+    {
+      src: "/js/monetag/5-in-page-push-normal.js",
+    },
+  ],
+});
+
 const app = useRuntimeConfig();
 const color = useColorMode();
 const YT = usePlayer();

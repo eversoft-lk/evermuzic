@@ -33,8 +33,9 @@ async function getTrendingSongs() {
 
   const items = data.value.tracks.slice(0, 13);
 
-  getTopSong(items[0].artist.name);
-  topSong.value.name = items[0].name;
+  const randomIndex = Math.floor(Math.random() * 5);
+  getTopSong(items[randomIndex].artist.name);
+  topSong.value.name = items[randomIndex].name;
   items.forEach(async (item) => {
     const { data: tracks } = await useFetch(
       app.public.spotifyApi +
@@ -153,7 +154,7 @@ async function listenNow() {
         <div class="grid gap-4 grid-cols-2 lg:grid-cols-6">
           <!-- Container for the top three items -->
           <div class="col-span-2 lg:col-span-4 space-y-4">
-            <h2 class="text-white text-xl font-bold">Most Popular Now</h2>
+            <h2 class="text-white text-xl font-bold">Popular Now</h2>
 
             <USkeleton
               v-if="topSong.name == null"
