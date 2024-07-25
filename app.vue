@@ -14,14 +14,14 @@ useHead({
     },
   ],
   script: [
-    {
-      src: "/js/monetag/1-in-page-push.js",
-      "data-cfasync": false,
-      type: "text/javascript",
-    },
-    {
-      src: "/js/monetag/2-in-page-push.js",
-    },
+    // {
+    //   src: "/js/monetag/1-in-page-push.js",
+    //   "data-cfasync": false,
+    //   type: "text/javascript",
+    // },
+    // {
+    //   src: "/js/monetag/2-in-page-push.js",
+    // },
     {
       src: "/js/monetag/3-vignette.js",
       "data-cfasync": false,
@@ -35,9 +35,9 @@ useHead({
       "data-cfasync": false,
       src: "//thubanoa.com/1?z=7776412",
     },
-    {
-      src: "/js/monetag/5-in-page-push-normal.js",
-    },
+    // {
+    //   src: "/js/monetag/5-in-page-push-normal.js",
+    // },
   ],
 });
 
