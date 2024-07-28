@@ -1,60 +1,57 @@
 <script setup lang="ts">
-import { NotifyMeRequest } from "~/schema";
-import type { NotifyMeRequestType } from "~/schema";
-import type { FormSubmitEvent } from "#ui/types";
-
-const app = useRuntimeConfig();
 const isOpen = ref(false);
-const toast = useToast();
-const form = ref({
-  name: "",
-  email: "",
-});
+const script: Array<{ src: string; [key: string]: any }>  = [
+  // {
+  //   src: "/js/monetag/1-in-page-push.js",
+  //   "data-cfasync": false,
+  //   type: "text/javascript",
+  // },
+  // {
+  //   src: "/js/monetag/2-in-page-push.js",
+  // },
+  {
+    src: "/js/monetag/3-vignette.js",
+    "data-cfasync": false,
+    type: "text/javascript",
+  },
+  {
+    src: "/js/monetag/4-vignette.js",
+  },
+  {
+    async: true,
+    "data-cfasync": false,
+    src: "//thubanoa.com/1?z=7776412",
+  },
+  // {
+  //   src: "/js/monetag/5-in-page-push-normal.js",
+  // },
+];
+
 onMounted(() => {
-  if (localStorage.getItem("notify_me")) {
-    return;
-  }
-  setTimeout(() => {
+  const agree = localStorage.getItem("agree-to-ads");
+  if (agree) {
+    isOpen.value = false;
+    showAdd();
+  } else {
     isOpen.value = true;
-  }, 2000);
+  }
 });
 
-async function getNotify(event: FormSubmitEvent<NotifyMeRequestType>) {
-  const { data } = await useFetch(app.public.evermuzicApi + "/notify-me", {
-    method: "POST",
-    body: event.data,
-  });
-
-  if (data.value) {
-    toast.add({
-      id: "notify_me",
-      title: "Thank you for your interest!",
-      description: "We will notify you when the application is ready to use.",
-      icon: "solar:check-circle-bold",
-      timeout: 5000,
-    });
-  } else {
-    toast.add({
-      id: "notify_me",
-      title: "Something went wrong!",
-      description: "You are already in the list. We will notify you soon.",
-      icon: "solar:close-circle-bold",
-      color: "red",
-      timeout: 5000,
-    });
-  }
-  localStorage.setItem("notify_me", "true");
-
-  form.value = {
-    name: "",
-    email: "",
-  };
+function close() {
   isOpen.value = false;
+  localStorage.setItem("agree-to-ads", "true");
+  showAdd();
 }
 
-function dontShowAgain() {
-  localStorage.setItem("notify_me", "true");
-  isOpen.value = false;
+function showAdd() {
+  script.forEach(({ src, ...attrs }) => {
+    const scriptElement = document.createElement('script');
+    scriptElement.src = src;
+    (Object.keys(attrs) as Array<keyof typeof attrs>).forEach(attr => {
+      scriptElement.setAttribute(attr, (attrs[attr] as string | number));
+    });
+    document.head.appendChild(scriptElement);
+  });
 }
 </script>
 
@@ -70,7 +67,7 @@ function dontShowAgain() {
       <template #header>
         <div class="flex items-center justify-between">
           <h3 class="text-base font-semibold uppercase leading-6 text-white">
-            This page is under development
+            Welcome to EverMuzic!
           </h3>
         </div>
       </template>
@@ -81,37 +78,29 @@ function dontShowAgain() {
         </div>
         <div class="col-span-2 lg:col-span-1">
           <p class="text-sm text-gray-400">
-            We are working hard to bring you the best experience. Please fill
-            the form below to get notified when the page is ready.
+            While you browse our site, you may see background ads, but rest
+            assured, they won't interrupt your music once it starts playing.
+            These ads help us cover server costs to provide you with
+            uninterrupted music.
           </p>
 
           <UDivider class="my-4" />
 
+          <p class="text-sm text-gray-400">
+            If you find our service valuable, consider making a donation. As a
+            token of our gratitude, we'll give you a month of background ad-free
+            browsing experience!
+          </p>
           <div>
-            <UForm
-              :schema="NotifyMeRequest"
-              :state="form"
-              class="flex flex-col gap-5"
-              @submit="getNotify"
-            >
-              <UFormGroup label="Your Name" name="name" required>
-                <UInput placeholder="Enter Your Name" v-model="form.name" />
-              </UFormGroup>
-              <UFormGroup label="Email Address" name="email" required>
-                <UInput
-                  placeholder="Enter Your Email Address"
-                  v-model="form.email"
-                />
-              </UFormGroup>
-              <div class="flex gap-3 justify-end">
-                <UButton
-                  color="gray"
-                  label="Stay Away From Me"
-                  @click="dontShowAgain"
-                />
-                <UButton label="Notify Me" type="submit" />
-              </div>
-            </UForm>
+            <div class="flex justify-end">
+              <UButton
+                class="mt-2"
+                label="Continue with In-page ads"
+                icon="ic:round-send"
+                trailing
+                @click="close"
+              />
+            </div>
           </div>
         </div>
       </div>

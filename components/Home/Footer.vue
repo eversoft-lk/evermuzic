@@ -25,21 +25,21 @@
         <div class="w-full flex flex-col items-center gap-2 order-2 lg:order-1">
           <h3 class="text-xl font-bold text-center uppercase">Top Pages</h3>
           <div class="flex flex-col text-center">
-            <HomeFooterItem name="Web Development" link="/" />
-            <HomeFooterItem name="Mobile Development" link="/" />
-            <HomeFooterItem name="UI/ UX Designing" link="/" />
-            <HomeFooterItem name="Database Designing" link="/" />
-            <HomeFooterItem name="SEO Optimizing" link="/" />
+            <HomeFooterItem name="Popular Now" link="/" />
+            <HomeFooterItem name="Popular Artists" link="/artists" />
+            <HomeFooterItem name="Trending Now" link="/" />
+            <HomeFooterItem name="Playlist for you" link="/" />
+            <HomeFooterItem name="Popular Worldwide" link="/artists" />
           </div>
         </div>
         <div class="w-full flex flex-col items-center gap-2 order-3">
           <h3 class="text-xl font-bold text-center uppercase">Trending Now</h3>
           <div class="flex flex-col text-center">
-            <HomeFooterItem name="Features Of Nuxt JS" link="/" />
-            <HomeFooterItem name="New JS Runtime | BUN" link="/" />
-            <HomeFooterItem name="Get Started With Laravel" link="/" />
-            <HomeFooterItem name="Project Management tips..." link="/" />
-            <HomeFooterItem name="First Year in software..." link="/" />
+            <HomeFooterItem name="ESPRESSO" link="/search?q=espresso" />
+            <HomeFooterItem name="Good Luck, Babe!" link="/search?q=Good%20Luck,%20Babe!" />
+            <HomeFooterItem name="BIRDS OF A FEATHER" link="/search?q=BIRDS%20OF%20A%20FEATHER" />
+            <HomeFooterItem name="Please Please Please" link="/search?q=Please%20Please%20Please" />
+            <HomeFooterItem name="Not Like Us" link="/search?q=BIRDS%20OF%20A%20FEATHER" />
           </div>
         </div>
       </div>
@@ -48,15 +48,11 @@
       >
         <p>
           Design And Developed By
-          <a class="font-bold" href="https://www.eversoft.lk"
-            >Eversoft IT Solutions</a
-          >.
+          <a class="font-bold">Team of EverMusic</a>.
         </p>
         <p>
           &copy; Copyright 2024
-          <a class="font-bold" href="https://www.eversoft.lk"
-            >Eversoft IT Solutions</a
-          >. Alright Reserved.
+          <a class="font-bold">Team of EverMusic</a>. Alright Reserved.
         </p>
       </div>
     </div>
