@@ -72,7 +72,7 @@ const featuredPlaylists = ref([
 <template>
   <div>
     <NuxtLayout name="home">
-      <div class="p-3 flex justify-end">
+      <!-- <div class="p-3 flex justify-end">
         <UButton
           label="Create a New Playlist"
           icon="solar:music-library-2-bold-duotone"
@@ -128,7 +128,7 @@ const featuredPlaylists = ref([
             </UForm>
           </div>
         </USlideover>
-      </div>
+      </div> 
       <div class="px-2 flex flex-wrap gap-3">
         <PlaylistCard
           v-for="playlist in featuredPlaylists"
@@ -138,6 +138,25 @@ const featuredPlaylists = ref([
           :image="playlist.images[0].url"
           :to="`/playlist/1/${playlist.id}`"
         />
+      </div> -->
+      <div class="p-10 flex justify-center">
+        <div class="w-full md:w-2/3 lg:max-w-[800px] gap-2 p-5 bg-blue-600/30 rounded-lg border-blue-600">
+          <h1 class="font-bold text-xl font-kanit">
+            Coming Soon: Create Your Own Playlists!
+          </h1>
+
+          <p class="mt-2">
+            We are excited to announce that we are working on a new feature that
+            will allow you to create and manage your own playlists. This feature
+            will be available soon, providing you with a personalized and
+            enhanced music experience on Evermuzic.
+          </p>
+
+          <p class="mt-1">
+            Stay tuned for updates and get ready to curate your perfect music
+            collections!
+          </p>
+        </div>
       </div>
     </NuxtLayout>
   </div>

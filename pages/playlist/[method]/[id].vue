@@ -24,12 +24,15 @@ const YT = usePlayer();
 const spotify = useSpotify();
 const router = useRoute();
 const app = useRuntimeConfig();
+const toast = useToast();
 const playlist = ref<Playlist | null>(null);
 const totalMs = ref(0);
 const loading = ref(false);
 const method = router.params.method as string;
 const isPlaying = ref(false);
 const playlistImage = ref<HTMLImageElement>();
+const isFavorite = ref(false);
+const auth = useAuth();
 
 onMounted(async () => {
   await fetchPlaylist(
@@ -56,10 +59,6 @@ watch(playlistImage, () => {
 
 const dropdownItems = [
   [
-    {
-      label: "Download",
-      icon: "solar:download-bold",
-    },
     {
       label: "Share",
       icon: "solar:share-bold",
@@ -291,6 +290,100 @@ async function playAll() {
     return;
   }
 }
+
+async function download(name: string) {
+  const id = await YT.getYTID(name);
+  if (!id) {
+    toast.add({
+      title: "ERROR",
+      description:
+        "The song you are trying to download is not available to download.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+  }
+
+  useRouter().push(`/download?videoId=${id}`);
+}
+
+async function toggleFavorite() {
+  if (!auth.isLoggedIn) {
+    toast.add({
+      title: "ERROR",
+      description: "You need to be logged in to add this playlist to favorite.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+    return;
+  }
+
+  const { data } = await useFetch<{ status: "success" | "error" }>(
+    app.public.evermuzicApi + "/favourite",
+    {
+      method: "post",
+      headers: {
+        Authorization: auth.accessToken as string,
+      },
+      body: {
+        title: playlist.value?.name,
+        description: playlist.value?.description,
+        image: playlist.value?.image,
+        playlist_id: router.params.id,
+        playlist_type: method,
+      },
+    }
+  );
+
+  if (!data.value) {
+    toast.add({
+      title: "ERROR",
+      description: "Failed to add this playlist to favorite.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+    return;
+  }
+
+  if (data.value.status === "error") {
+    toast.add({
+      title: "ERROR",
+      description: "Failed to add this playlist to favorite.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+    return;
+  }
+
+  isFavorite.value = !isFavorite.value;
+  toast.add({
+    title: "SUCCESS",
+    description: isFavorite.value
+      ? "Playlist added to favorite."
+      : "Playlist removed from favorite.",
+    timeout: 3000,
+    icon: "solar:check-circle-bold",
+    color: "green",
+  });
+}
+
+const { data: favorites } = useFetch(app.public.evermuzicApi + "/favourite", {
+  headers: {
+    Authorization: auth.accessToken as string,
+  },
+});
+watch(favorites, () => {
+  if (favorites.value) {
+    const playlist = favorites.value.playlists.find(
+      (playlist: any) =>
+        playlist.playlist_id === router.params.id
+    );
+    isFavorite.value = playlist ? true : false;
+  }
+});
 </script>
 
 <template>
@@ -382,10 +475,19 @@ async function playAll() {
                   v-show="isPlaying"
                 />
               </div>
-              <Icon
-                name="solar:heart-bold"
-                class="text-3xl text-indigo-500 cursor-pointer"
-              />
+              <div @click="toggleFavorite">
+                <Icon
+                  name="solar:heart-bold"
+                  class="text-3xl text-indigo-500 cursor-pointer"
+                  v-if="isFavorite"
+                />
+                <Icon
+                  name="solar:heart-outline"
+                  class="text-3xl text-indigo-500 cursor-pointer"
+                  v-else
+                />
+              </div>
+
               <UDropdown
                 :items="dropdownItems"
                 :popper="{
@@ -456,7 +558,17 @@ async function playAll() {
 
               <template #duration-data="{ row }">
                 <div class="flex gap-5 items-center">
-                  <NuxtLink to="/download">
+                  <div v-if="method === '1'">
+                    <Icon
+                      @click="download(row.track.name)"
+                      name="solar:download-minimalistic-outline"
+                      class="text-violet-500 text-xl cursor-pointer"
+                    />
+                  </div>
+                  <NuxtLink
+                    v-else-if="method === '2'"
+                    :to="`/download?videoId=${row.track.snippet.resourceId.videoId}`"
+                  >
                     <Icon
                       name="solar:download-minimalistic-outline"
                       class="text-violet-500 text-xl cursor-pointer"

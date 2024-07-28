@@ -48,16 +48,19 @@ const dropdownItems = [
       },
     },
   ],
+  // [
+  //   {
+  //     label: "Save to playlist",
+  //     icon: "ic:twotone-playlist-add",
+  //   },
+  // ],
   [
     {
-      label: "Save to playlist",
-      icon: "ic:twotone-playlist-add",
-    },
-  ],
-  [
-    {
-      label: "Info",
-      icon: "mdi:information",
+      label: "Download",
+      icon: "ic:round-cloud-download",
+      click: () => {
+        download();
+      },
     },
   ],
 ];
@@ -83,6 +86,15 @@ async function getSong() {
   }
 
   return id;
+}
+
+async function download() {
+  const id = await getSong();
+  if (!id) {
+    return;
+  }
+
+  useRouter().push(`/download?videoId=${id}`);
 }
 </script>
 
