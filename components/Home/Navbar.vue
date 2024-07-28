@@ -45,6 +45,23 @@ const options = [
       },
     ],
   },
+  {
+    name: "",
+    options: [
+      {
+        name: "Sign In",
+        icon: "material-symbols:login",
+        to: "/auth/sign-in",
+        isMobile: true,
+      },
+      {
+        name: "Sign Up",
+        icon: "ic:baseline-person-add-alt-1",
+        to: "/auth/sign-up",
+        isMobile: true,
+      },
+    ],
+  },
 ];
 </script>
 
