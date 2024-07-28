@@ -9,7 +9,6 @@ const isLoggedIn = ref(false);
 
 onMounted(() => {
   isLoggedIn.value = auth.isLoggedIn;
-  console.log(auth.user);
   if (router.path == "/search" || router.path == "/yt-search") {
     query.value = router.query["q"];
     YT.searchQuery = query.value;

@@ -11,6 +11,7 @@ type Artist = {
   followers: number;
   songs?: number;
   duration?: string;
+  popularity: number;
 };
 
 type RelatedArtist = {
@@ -39,7 +40,8 @@ const toast = useToast();
 const artist = ref<Artist | null>(null);
 const relatedArtists = ref<RelatedArtist[]>([]);
 const topTracks = ref<SpotifyArtistTopTrack[]>([]);
-
+const isFavorite = ref(false);
+const auth = useAuth();
 onMounted(() => {
   fetchArtist();
 });
@@ -118,6 +120,7 @@ async function fetchArtist() {
     name: data.value.name,
     image: data.value.images[0].url,
     followers: data.value.followers.total,
+    popularity: data.value.popularity,
     songs: 89,
     duration: "10 hour 42 min",
   };
@@ -219,6 +222,86 @@ async function download(name: string) {
 
   useRouter().push(`/download?videoId=${id}`);
 }
+
+async function toggleFavorite() {
+  if (!auth.isLoggedIn) {
+    toast.add({
+      title: "ERROR",
+      description: "You need to be logged in to add this artist to favorite.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+    return;
+  }
+
+  const { data } = await useFetch<{ status: "success" | "error" }>(
+    app.public.evermuzicApi + "/favourite",
+    {
+      method: "post",
+      headers: {
+        Authorization: auth.accessToken as string,
+      },
+      body: {
+        title: artist.value?.name,
+        description: `${artist.value?.followers.toLocaleString()}:${
+          artist.value?.popularity
+        }`,
+        image: artist.value?.image,
+        playlist_id: route.params.id,
+        playlist_type: 4,
+      },
+    }
+  );
+
+  if (!data.value) {
+    toast.add({
+      title: "ERROR",
+      description: "Failed to add this playlist to favorite.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+    return;
+  }
+
+  if (data.value.status === "error") {
+    toast.add({
+      title: "ERROR",
+      description: "Failed to add this playlist to favorite.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+    return;
+  }
+
+  isFavorite.value = !isFavorite.value;
+  toast.add({
+    title: "SUCCESS",
+    description: isFavorite.value
+      ? "Playlist added to favorite."
+      : "Playlist removed from favorite.",
+    timeout: 3000,
+    icon: "solar:check-circle-bold",
+    color: "green",
+  });
+}
+
+const { data: favorites } = useFetch(app.public.evermuzicApi + "/favourite", {
+  headers: {
+    Authorization: auth.accessToken as string,
+  },
+});
+watch(favorites, () => {
+  if (favorites.value) {
+    const playlist = favorites.value.playlists.find(
+      (playlist: any) =>
+        playlist.playlist_id === route.params.id && playlist.playlist_type === 4
+    );
+    isFavorite.value = playlist ? true : false;
+  }
+});
 </script>
 
 <template>
@@ -293,10 +376,18 @@ async function download(name: string) {
               >
                 <Icon name="solar:play-bold" class="text-xl" />
               </div>
-              <Icon
-                name="solar:heart-bold"
-                class="text-3xl text-indigo-500 cursor-pointer"
-              />
+              <div @click="toggleFavorite">
+                <Icon
+                  name="solar:heart-bold"
+                  class="text-3xl text-indigo-500 cursor-pointer"
+                  v-if="isFavorite"
+                />
+                <Icon
+                  name="solar:heart-outline"
+                  class="text-3xl text-indigo-500 cursor-pointer"
+                  v-else
+                />
+              </div>
               <UDropdown
                 :items="dropdownItems"
                 :popper="{ arrow: true, placement: 'bottom-end' }"

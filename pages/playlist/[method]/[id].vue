@@ -378,7 +378,8 @@ const { data: favorites } = useFetch(app.public.evermuzicApi + "/favourite", {
 watch(favorites, () => {
   if (favorites.value) {
     const playlist = favorites.value.playlists.find(
-      (playlist: any) => playlist.playlist_id === router.params.id
+      (playlist: any) =>
+        playlist.playlist_id === router.params.id
     );
     isFavorite.value = playlist ? true : false;
   }

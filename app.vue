@@ -6,48 +6,22 @@ type SearchResultType = {
   result: Song[];
 };
 
-// useHead({
-//   meta: [
-//     {
-//       name: "monetag",
-//       content: "e8ec2c262bdcc6e4a5adb0ef21759ba9",
-//     },
-//   ],
-//   script: [
-//     // {
-//     //   src: "/js/monetag/1-in-page-push.js",
-//     //   "data-cfasync": false,
-//     //   type: "text/javascript",
-//     // },
-//     // {
-//     //   src: "/js/monetag/2-in-page-push.js",
-//     // },
-//     {
-//       src: "/js/monetag/3-vignette.js",
-//       "data-cfasync": false,
-//       type: "text/javascript",
-//     },
-//     {
-//       src: "/js/monetag/4-vignette.js",
-//     },
-//     {
-//       async: true,
-//       "data-cfasync": false,
-//       src: "//thubanoa.com/1?z=7776412",
-//     },
-//     // {
-//     //   src: "/js/monetag/5-in-page-push-normal.js",
-//     // },
-//   ],
-// });
+type GetDonationResponseType = {
+  donations: {
+    id: number;
+    name: string;
+    amount: string;
+    email: string;
+    createdAt: string;
+  }[];
+};
 
 const app = useRuntimeConfig();
 const color = useColorMode();
 const YT = usePlayer();
 const ytPlayer = ref<HTMLElement>();
-const thumbWidth = ref(0);
-const duration = ref(0);
 const route = useRoute();
+const auth = useAuth();
 
 onMounted(async () => {
   color.preference = "dark";
@@ -130,6 +104,55 @@ const isPlayerVisible = computed(() => {
 
   return true;
 });
+
+const { data: donors } = useFetch<GetDonationResponseType>(
+  `${app.public.evermuzicApi}/donate`
+);
+watch(donors, () => {
+  if (!donors.value) {
+    return;
+  }
+
+  if (auth.isLoggedIn) {
+    const isDonor = donors.value.donations.some(
+      (donor) => donor.email === auth.user?.email
+    );
+
+    if (!isDonor) {
+      showAds();
+    }
+  } else {
+    if (localStorage.getItem("agree-to-ads")) {
+      showAds();
+    }
+  }
+});
+watch(
+  () => auth.isLoggedIn,
+  () => {
+    if (!auth.isLoggedIn) {
+      if (localStorage.getItem("agree-to-ads")) {
+        showAds();
+      }
+      return;
+    }
+
+    if (!donors.value) {
+      return;
+    }
+
+    const isDonor = donors.value.donations.some(
+      (donor) =>
+        donor.email === auth.user?.email &&
+        new Date(donor.createdAt) >
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    );
+
+    if (!isDonor) {
+      showAds();
+    }
+  }
+);
 </script>
 
 <template>
