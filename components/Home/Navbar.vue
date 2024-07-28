@@ -2,67 +2,80 @@
 const navbar = useNavbarStore();
 const isLarge = inject("isLarge") as Ref<boolean>;
 
-const options = [
-  {
-    name: "Browse",
-    options: [
+const options = computed(() => {
+  let authOptions = [
+    {
+      name: "Sign In",
+      icon: "material-symbols:login",
+      to: "/auth/sign-in",
+      isMobile: true,
+    },
+    {
+      name: "Sign Up",
+      icon: "ic:baseline-person-add-alt-1",
+      to: "/auth/sign-up",
+      isMobile: true,
+    },
+  ];
+  if (useAuth().isLoggedIn) {
+    authOptions = [
       {
-        name: "Discover",
-        icon: "material-symbols:search",
-        to: "/",
-      },
-      {
-        name: "Artists",
-        icon: "material-symbols:artist",
-        to: "/artists",
-      },
-      {
-        name: "Donation",
-        icon: "bx:bxs-donate-heart",
-        to: "/donation",
+        name: "Sign Out",
+        icon: "material-symbols:logout",
+        to: "/auth/sign-out",
         isMobile: true,
       },
-      {
-        name: "Feedback",
-        icon: "bx:bxs-comment-detail",
-        to: "/feedback",
-        isMobile: true,
-      },
-    ],
-  },
-  {
-    name: "Playlist",
-    options: [
-      {
-        name: "My Playlist",
-        icon: "material-symbols:playlist-play",
-        to: "/playlist",
-      },
-      {
-        name: "Favorite",
-        icon: "ph:list-heart-bold",
-        to: "/playlist/favorite",
-      },
-    ],
-  },
-  {
-    name: "",
-    options: [
-      {
-        name: "Sign In",
-        icon: "material-symbols:login",
-        to: "/auth/sign-in",
-        isMobile: true,
-      },
-      {
-        name: "Sign Up",
-        icon: "ic:baseline-person-add-alt-1",
-        to: "/auth/sign-up",
-        isMobile: true,
-      },
-    ],
-  },
-];
+    ];
+  }
+  return [
+    {
+      name: "Browse",
+      options: [
+        {
+          name: "Discover",
+          icon: "material-symbols:search",
+          to: "/",
+        },
+        {
+          name: "Artists",
+          icon: "material-symbols:artist",
+          to: "/artists",
+        },
+        {
+          name: "Donation",
+          icon: "bx:bxs-donate-heart",
+          to: "/donation",
+          isMobile: true,
+        },
+        {
+          name: "Feedback",
+          icon: "bx:bxs-comment-detail",
+          to: "/feedback",
+          isMobile: true,
+        },
+      ],
+    },
+    {
+      name: "Playlist",
+      options: [
+        {
+          name: "My Playlist",
+          icon: "material-symbols:playlist-play",
+          to: "/playlist",
+        },
+        {
+          name: "Favorite",
+          icon: "ph:list-heart-bold",
+          to: "/playlist/favorite",
+        },
+      ],
+    },
+    {
+      name: "",
+      options: authOptions,
+    },
+  ];
+});
 </script>
 
 <template>

@@ -35,7 +35,7 @@ const spotify = useSpotify();
 const app = useRuntimeConfig();
 const route = useRoute();
 const router = useRouter();
-
+const toast = useToast();
 const artist = ref<Artist | null>(null);
 const relatedArtists = ref<RelatedArtist[]>([]);
 const topTracks = ref<SpotifyArtistTopTrack[]>([]);
@@ -63,10 +63,6 @@ watch(artistImage, () => {
 
 const dropdownItems = [
   [
-    {
-      label: "Download",
-      icon: "solar:download-bold",
-    },
     {
       label: "Share",
       icon: "solar:share-bold",
@@ -207,6 +203,22 @@ async function playAll() {
     }
   }
 }
+
+async function download(name: string) {
+  const id = await YT.getYTID(name);
+  if (!id) {
+    toast.add({
+      title: "ERROR",
+      description:
+        "The song you are trying to download is not available to download.",
+      timeout: 3000,
+      icon: "solar:close-circle-bold",
+      color: "red",
+    });
+  }
+
+  useRouter().push(`/download?videoId=${id}`);
+}
 </script>
 
 <template>
@@ -322,12 +334,12 @@ async function playAll() {
 
               <template #duration-data="{ row }">
                 <div class="flex gap-5 items-center">
-                  <NuxtLink to="/download">
+                  <div @click="download(`${row.name} ${row.artists[0].name}`)">
                     <Icon
                       name="solar:download-minimalistic-outline"
                       class="text-violet-500 text-xl cursor-pointer"
                     />
-                  </NuxtLink>
+                  </div>
                   <p class="text-gray-400">
                     {{ msToMin(row.duration_ms) }}
                   </p>
